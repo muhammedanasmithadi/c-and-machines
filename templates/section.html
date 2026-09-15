@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}{{ section.title }} — {% endblock %}
+{% block description %}{{ section.description | default(value=config.description) }}{% endblock %}
+{% block crumb %}{{ section.title }}{% endblock %}
+
+{% block content %}
+  <p class="kicker">{{ section.title | upper }}</p>
+  {{ section.content | safe }}
+{% endblock content %}

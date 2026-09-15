@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock %}{{ config.title }}</title>
+  <meta name="description" content="{% block description %}{{ config.description }}{% endblock %}">
+  <link rel="stylesheet" href="{{ get_url(path='css/book.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="{{ get_url(path='/') }}">{{ config.title }}</a>
+      <span class="masthead-run">A course in C and how computers work</span>
+      {% if config.extra.show_version_badge %}
+        <span class="version-badge">{{ config.extra.version_label }}</span>
+      {% endif %}
+    </div>
+  </header>
+
+  <main class="content">
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <a href="{{ get_url(path='/') }}">Course map</a>
+      <span class="crumb-sep">/</span>
+      <span>{% block crumb %}{% endblock %}</span>
+    </nav>
+
+    {% block content %}{% endblock content %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <p>Source canon: <a href="https://man7.org/linux/man-pages/index.html">man7</a> · <a href="https://csapp.cs.cmu.edu/3e/">CS:APP</a> · <a href="https://documentation-service.arm.com/static/5f8c0bcc8c6b1a5a2a3a54e8">AAPCS64</a></p>
+      <p class="colophon-rule">· · ·</p>
+      <p>Prose follows the classic style: concrete first, mechanism before law; the machine judges.</p>
+    </div>
+  </footer>
+
+  <script src="{{ get_url(path='js/tabs.js') }}"></script>
+  <script src="{{ get_url(path='js/memmap.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
