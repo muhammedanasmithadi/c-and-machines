@@ -39,6 +39,47 @@ Turner in *Clear and Simple as the Truth*:
 - **The machine judges.** Every chapter ends with the reader able to run
   something and watch the machine agree or disagree.
 
+## The teaching voice
+
+The classic style keeps the prose honest, but it does not by itself make the
+prose teach. Teaching prose shows the reader's starting point, then moves
+toward the artifact. The reader is smart, curious, and new to the subject;
+the text walks beside them, not above them.
+
+- **Open with the reader's likely mental model.** "You can see why someone
+  would read this as X." Then the artifact answers.
+- **Check every mental model against the artifact.** When the model is
+  wrong, the machine's output is what says so — the text just looks at it.
+- **Ask a question only when an artifact answers it next.** Never leave a
+  question hanging.
+- **Use "we" for the teacher and the reader together.** "We compile, we
+  run, we read the verdict." A direct "you" is fine for an instruction ("Run
+  the suite"), not for a sermon.
+- **State one sharp rule per section.** One. A second rule sentence makes
+  the first sound like decoration.
+- **Give the reader a job in every section.** Predict, run, read, fix. The
+  book says what to look at; the reader looks.
+
+Forbidden patterns. They read as advertisement, prophecy, or decided-in-a-
+doc:
+
+- **No triadic slogans.** "X, Y, one Z" or "Two A, two B, one C." Real
+  writing does not countenance.
+- **No not-X-but-Y openers.** "This is not a quirk. It is the definition."
+  State the fact; let it answer the reader's question.
+- **No absolute white/black thinking.** "None of these is a logic bug."
+  Say which it is, with evidence.
+- **No sermon-you.** "Your code either obeys it or the assertions fail on
+  you." The reader is the student, not the accused.
+- **No drama words.** die, 3 AM, moods, lore, phantom, magic. The machine
+  crashes; it does not die. It prints; it does not explain. A failure at
+  three in the morning is a real thing a student may face, but it is a
+  deployed-software fact, not a scare.
+- **No repeated slogans.** The epigraph may say it once in advance; the
+  closing may name it once more. In between, plain prose.
+- **One em-dash per paragraph at most.** Sentence length is the rhythm:
+  some spare, some full, some routine. Do not machine-gun the dashes.
+
 ## Full articulation
 
 This book is not a telegram, a slide, or a chat reply. It is at leisure to
@@ -107,3 +148,8 @@ is irrelevant or the chapter's structure has failed.
 - [ ] Rhythm varies; no wall of staccato, no wall of long lines.
 - [ ] Prose runs top-to-bottom; nothing is skippable without cost.
 - [ ] An articulate voice, at the reader's service.
+- [ ] No triadic slogans, no not-X-but-Y openers, no sermon-you.
+- [ ] No drama words (die, 3 AM, moods, lore, phantom, magic).
+- [ ] At most one em-dash per paragraph.
+- [ ] One sharp rule sentence per section.
+- [ ] The reader has a job in every section: predict, run, read, fix.

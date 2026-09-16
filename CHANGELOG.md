@@ -90,6 +90,21 @@ for the four programs). "in the reader's own words" changed to the
 epigraph's own words; "never freeing anything twice" dropped so the closing
 does not misstate register handling.
 
+### Revision: teaching voice stripped of AI tells
+
+A read-aloud pass flagged the prose voice as pitched. Four repeat patterns were
+cut across the chapter, the home page, and the lab notes: triadic slogans (the
+"A, B, one C" cadence), not-X-but-Y sentence openers, sermon-you scolding, and
+drama words (die, 3 AM, moods, lore, magic). WRITING.md gains a "teaching
+voice" section in front of the classic-style rules: open with the reader's
+likely mental model and let the artifact answer; ask a question only when an
+artifact responds; use "we" for teacher and reader; one sharp rule sentence
+per section; give the reader a job (predict, run, read, fix). The em-dash is
+limited to one per paragraph. Verdict labels, logs, code, tabs, the stepper,
+tables, and every hyperlink are byte-identical. The lab Makefile suite still
+reports leak detected, double-free detected, dangling detected, fixed PASSED
+on a clean build.
+
 ### What ships
 
 - Course map with all 8 phases outlined

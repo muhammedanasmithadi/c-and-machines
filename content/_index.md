@@ -3,17 +3,17 @@ title = "C and Machines"
 description = "From first byte to complex systems. A self-paced course in C and the computer underneath it, taught from primary sources and proven against the machine."
 +++
 
-A program is a set of promises. You promise the compiler that your pointers point to live objects, that your arrays stay in bounds, that memory is returned exactly once. The machine keeps a ledger of every address, every allocation, every byte. Break a promise and the ledger shows it. Most of this book is about learning to keep those accounts so well that the machine never reports a discrepancy.
+A program is a set of promises. You promise the compiler that your pointers point to live objects, that your arrays stay in bounds, that memory is returned exactly once. The machine keeps a ledger of every address, every allocation, every byte. Break a promise and the ledger shows it. Most of this book is about keeping those accounts so well that the machine never reports a discrepancy.
 
-The goal is plain. By the last phase you will write, alone, the programs people build careers on: a shell that schedules jobs, an allocator a production service can trust, a concurrent server that survives its own load, an emulator that runs real machine code. None of that is magic. Each is a small set of ideas, verified the plain way — running the code and reading what it reports, in private, where a failure costs nothing.
+The goal is plain. By the last phase you will write, alone, the programs people build careers on: a shell that schedules jobs, an allocator a production service can trust, a concurrent server that survives its own load, an emulator that runs real machine code. Each is a small set of ideas, verified the plain way: run the code and read what it reports, in private, where a failure costs nothing.
 
-Along the way you see what a machine actually is, in both letter and law. Bits become bytes, then registers, stacks, caches, pages, processes, signals, networks. None of these is a metaphor. They are physical things with budgets and failure modes, and they are all governed by a small number of laws you will meet again in every phase.
+Along the way you see what a machine actually is. Bits become bytes, then registers, stacks, caches, pages, processes, signals, networks. These are physical things with budgets and failure modes, all governed by a small number of laws you will meet again in every phase.
 
-This is a textbook written like an apprenticeship. Nothing is on the author's word. Each module opens with a concrete program or a real question, plays it forward, shows the mechanism underneath, and then proves the claim three ways: the specification, the runnable code, the machine's own log. Reproduce it on your own machine and the book becomes something you can check, not something you must trust.
+This is a textbook written like an apprenticeship. Nothing rests on the author's word. Each module opens with a concrete program or a real question, plays it forward, shows the mechanism underneath, then proves the claim three ways: the specification, the runnable code, and the machine's own log. Reproduce it on your own machine, and the book becomes something you can check for yourself.
 
 ## How the course is built
 
-Eight phases carry you from the first byte to working systems. Each phase ends with an artifact you build — proof of what you now understand, ready to survive an interview, a code review, or a server at 3 AM.
+Eight phases carry you from the first byte to working systems. Each phase ends with an artifact you build — proof of what you now understand, ready to survive an interview or a code review.
 
 | Phase | Territory | Exit artifact |
 |---|---|---|
@@ -29,7 +29,7 @@ Eight phases carry you from the first byte to working systems. Each phase ends w
 Every module follows one shape, held to a fixed standard:
 
 1. **A concrete artifact opens it.** A real program or a real question you recognize at once.
-2. **It is played forward.** Run it as-is; see the outcome plainly. A failure here is evidence, not a setup.
+2. **It is played forward.** Run it as-is; see the outcome plainly. A failure here is evidence.
 3. **The mechanism underneath.** How the machine actually behaves: the registers, the storage durations, the allocator's ledger.
 4. **A law lands in one sharp sentence.** The rule, stated so it can be repeated from memory.
 5. **Proof has three parts.** The specification, the runnable code, the log. All three appear; you can check all three.
