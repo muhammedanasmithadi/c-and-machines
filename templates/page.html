@@ -2,7 +2,7 @@
 
 {% block title %}{{ page.title }} — {% endblock %}
 {% block description %}{{ page.description | default(value=config.description) }}{% endblock %}
-{% block crumb %}{% if section %}{{ section.title }} / {% endif %}{{ page.title }}{% endblock %}
+{% block crumb %}{% if section %}{{ section.title }} / {% endif %}{% for ancestor in page.ancestors %}{% if ancestor != "_index.md" %}{% set ancestor_section = get_section(path=ancestor) %}{{ ancestor_section.title }} / {% endif %}{% endfor %}{{ page.title }}{% endblock %}
 
 {% block content %}
   <p class="kicker">{{ page.title | upper }}</p>

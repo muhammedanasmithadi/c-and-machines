@@ -52,4 +52,4 @@ qemu-aarch64 ./build/fixed
 
 `build/fixed` must run under `qemu-aarch64` and print `fixed: 42`.
 The three failure binaries must be seen by valgrind/ASan as failing on x86-64
-(the same sources, the same lifetime law), which proves the lesson is not x86 lore.
+(the same sources, the same lifetime law), which proves lifetime is C law, not one ISA's habit.

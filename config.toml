@@ -1,12 +1,11 @@
 base_url = "https://localhost/"
 title = "C and Machines"
 description = "A self-paced course from first byte to complex systems, in C and on the metal."
-build_search_index = true
 
 [markdown]
 
 [extra]
 author = "Anas"
 version = "0.1.0"
-version_label = "v0.1 — Pointers and Memory"
+version_label = "v0.1 — Pointers and Lifetime"
 show_version_badge = true

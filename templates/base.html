@@ -6,6 +6,7 @@
   <title>{% block title %}{% endblock %}{{ config.title }}</title>
   <meta name="description" content="{% block description %}{{ config.description }}{% endblock %}">
   <link rel="stylesheet" href="{{ get_url(path='css/book.css') }}">
+  <link rel="icon" type="image/svg+xml" href="{{ get_url(path='favicon.svg') }}">
   {% block head %}{% endblock %}
 </head>
 <body>
@@ -31,9 +32,9 @@
 
   <footer class="site-footer">
     <div class="site-footer-inner">
-      <p>Source canon: <a href="https://man7.org/linux/man-pages/index.html">man7</a> · <a href="https://csapp.cs.cmu.edu/3e/">CS:APP</a> · <a href="https://documentation-service.arm.com/static/5f8c0bcc8c6b1a5a2a3a54e8">AAPCS64</a></p>
+      <p>Source canon: <a href="https://man7.org/linux/man-pages/index.html">man7</a> · <a href="https://csapp.cs.cmu.edu/3e/">CS:APP</a> · <a href="https://github.com/ARM-software/abi-aa">AAPCS64</a></p>
       <p class="colophon-rule">· · ·</p>
-      <p>Prose follows the classic style: concrete first, mechanism before law; the machine judges.</p>
+      <p>Prose follows the classic style with a teaching voice: concrete first, mechanism before law; the machine judges.</p>
     </div>
   </footer>
 

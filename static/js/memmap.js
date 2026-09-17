@@ -12,7 +12,10 @@
     if (!btn || !rows.length) return;
 
     const states = rows[0].dataset.states ? rows[0].dataset.states.split(",") : [];
+    const last = Math.max(states.length - 1, 0);
     let cur = 0;
+
+    map.setAttribute("aria-live", "polite");
 
     function render(idx) {
       rows.forEach(function (row) {
@@ -22,7 +25,9 @@
         const note = row.querySelector(".memmap-note");
         if (note) note.textContent = row.dataset.notes ? row.dataset.notes.split("|")[idx] || "" : "";
       });
-      if (btn.dataset.labels) {
+      if (idx >= last) {
+        btn.textContent = btn.dataset.resetLabel || "Start over";
+      } else if (btn.dataset.labels) {
         const labels = btn.dataset.labels.split("|");
         btn.textContent = labels[idx] || btn.textContent;
       }
@@ -34,8 +39,8 @@
     }
 
     btn.addEventListener("click", function () {
-      cur++;
-      if (cur >= rows[0].dataset.states.split(",").length) cur = rows[0].dataset.states.split(",").length - 1;
+      if (cur >= last) cur = 0;
+      else cur++;
       render(cur);
     });
 

@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1 — Pointers and Memory
+## v0.1 — Pointers and Lifetime
 
 2026-09-15
 
@@ -104,6 +104,22 @@ limited to one per paragraph. Verdict labels, logs, code, tabs, the stepper,
 tables, and every hyperlink are byte-identical. The lab Makefile suite still
 reports leak detected, double-free detected, dangling detected, fixed PASSED
 on a clean build.
+
+### Revision: audit cleanup, docs, and accessibility
+
+A full-repo audit produced 13 findings, all resolved here. The footer
+AAPCS64 link pointed at a fabricated documentation-service URL (404); it now
+points at the ARM ABI repository. The badge label reads "v0.1 — Pointers and
+Lifetime", matching the chapter. The ARM lab notes drop the banned word
+"lore". The build drops the unused search index (elasticlunr plus the search
+index shipped 68K no page loads); the palette-comparison preview pages, the
+empty traces dir, and the empty root tests dir leave the tree. The footer
+colophon names the teaching voice. The repo gains a README and font
+attribution. Tabs gain the ARIA tab pattern with arrow-key navigation; the
+heap stepper resets at the end and announces through a live region.
+`make preflight` gates the WRITING.md banned-word list. The site gains a
+favicon and a real v0.1 edition section, so the chapter is no longer an
+orphan page.
 
 ### What ships
 
