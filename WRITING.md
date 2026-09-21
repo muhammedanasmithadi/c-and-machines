@@ -152,6 +152,6 @@ is irrelevant or the chapter's structure has failed.
 - [ ] An articulate voice, at the reader's service.
 - [ ] No triadic slogans, no not-X-but-Y openers, no sermon-you.
 - [ ] No drama words (die, 3 AM, moods, lore, phantom, magic).
-- [ ] At most one em-dash per paragraph.
+- [ ] At most one em-dash per paragraph (preflight enforces).
 - [ ] One sharp rule sentence per section.
 - [ ] The reader has a job in every section: predict, run, read, fix.
