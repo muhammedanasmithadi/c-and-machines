@@ -182,9 +182,9 @@ blockquote p { margin: .3rem 0; }
 .body td { border-bottom: 1px dotted var(--rule); color: var(--ink); }
 .body tr:last-child td { border-bottom: none; }
 .body td:first-child { color: var(--accent); font-weight: 700; }
-/* ---------- listings: taped clippings ---------- */
+/* ---------- listings: taped clippings, full column like tab panels ---------- */
 .body > .code-label {
-  width: fit-content; max-width: 100%; position: relative;
+  width: 100%; position: relative;
   margin-top: 2.125rem; margin-bottom: 0;
   background: var(--card); border: 1px solid var(--rule); border-bottom: 1px solid var(--hair);
   padding: .5rem 1rem;
@@ -202,7 +202,7 @@ blockquote p { margin: .3rem 0; }
   transform: translateX(-50%) rotate(-1.8deg);
 }
 .body > pre {
-  width: fit-content; max-width: 100%; margin-top: 0; margin-bottom: 2.125rem;
+  width: 100%; margin-top: 0; margin-bottom: 2.125rem;
   background: var(--codebg); color: var(--codeink); border: 1px solid var(--rule); border-top: none;
   font-family: var(--mono); font-size: 13px; line-height: 1.42;
   padding: 13px 16px; overflow-x: auto; white-space: pre; tab-size: 2;
