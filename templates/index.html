@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 
 {% block title %}{% endblock %}
-{% block crumb %}Course map{% endblock %}
+{% block pageclass %}home{% endblock %}
+{% block crumb %}{% endblock %}
 
 {% block content %}
-  <h1>{{ section.title }}</h1>
-  {{ section.content | safe }}
+  <h1 class="doc-title">{{ section.title }}</h1>
+  <div class="body">{{ section.content | safe }}</div>
 {% endblock content %}

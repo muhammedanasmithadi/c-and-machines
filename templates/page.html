@@ -2,9 +2,12 @@
 
 {% block title %}{{ page.title }} — {% endblock %}
 {% block description %}{{ page.description | default(value=config.description) }}{% endblock %}
-{% block crumb %}{% if section %}{{ section.title }} / {% endif %}{% for ancestor in page.ancestors %}{% if ancestor != "_index.md" %}{% set ancestor_section = get_section(path=ancestor) %}{{ ancestor_section.title }} / {% endif %}{% endfor %}{{ page.title }}{% endblock %}
+{% block pageclass %}module{% endblock %}
+{% block crumb %}{% if section %}<span class="crumb-sep">→</span>{{ section.title }}{% endif %}{% for ancestor in page.ancestors %}{% if ancestor != "_index.md" %}{% set ancestor_section = get_section(path=ancestor) %}<span class="crumb-sep">→</span>{{ ancestor_section.title }}{% endif %}{% endfor %}<span class="crumb-sep">→</span>{{ page.title }}{% endblock %}
 
 {% block content %}
-  <p class="kicker">{{ page.title | upper }}</p>
-  {{ page.content | safe }}
+  <p class="kicker">{{ page.extra.kicker | default(value="Lab Notebook") }}</p>
+  <h1 class="doc-title">{{ page.title }}</h1>
+  <p class="dateline">Entry {{ page.extra.entry | default(value="01") }} · {{ config.extra.version_label }} · Reference build: {{ page.extra.ref_build | default(value="GCC 16 · Fedora 44 x86-64") }}</p>
+  <div class="body">{{ page.content | safe }}</div>
 {% endblock content %}

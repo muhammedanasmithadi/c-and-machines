@@ -2,9 +2,12 @@
 
 {% block title %}{{ section.title }} — {% endblock %}
 {% block description %}{{ section.description | default(value=config.description) }}{% endblock %}
-{% block crumb %}{{ section.title }}{% endblock %}
+{% block pageclass %}section{% endblock %}
+{% block crumb %}<span class="crumb-sep">→</span>{{ section.title }}{% endblock %}
 
 {% block content %}
-  <p class="kicker">{{ section.title | upper }}</p>
-  {{ section.content | safe }}
+  <p class="kicker">{{ section.extra.kicker | default(value="Edition") }}</p>
+  <h1 class="doc-title">{{ section.title }}</h1>
+  <p class="dateline">{{ config.extra.version_label }} · Reference build: {{ section.extra.ref_build | default(value="GCC 16 · Fedora 44 x86-64") }}</p>
+  <div class="body">{{ section.content | safe }}</div>
 {% endblock content %}
