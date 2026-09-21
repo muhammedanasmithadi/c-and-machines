@@ -13,7 +13,7 @@ This is a textbook written like an apprenticeship. Nothing rests on the author's
 
 ## How the course is built
 
-Eight phases carry you from the first byte to working systems. Each phase ends with an artifact you build — proof of what you now understand, ready to survive an interview or a code review.
+Eight phases carry you from the first byte to working systems. Each phase ends with an artifact you build: proof of what you now understand, ready to survive an interview or a code review.
 
 | Phase | Territory | Exit artifact |
 |---|---|---|
@@ -63,4 +63,4 @@ High-quality practitioner writing is admitted case by case, against the same two
 
 ## Begin
 
-Start at [Phase 1](@/v0.1/phase-1-pointers/index.md) — the only phase written so far. It needs no prerequisites beyond a machine and curiosity. Phase 0 (bits, numbers, toolchain, shell) is next in the writing order; the rest of the book is built out of exactly those, one promise at a time.
+Start at [Phase 1](@/v0.1/phase-1-pointers/index.md) (the only phase written so far). It needs no prerequisites beyond a machine and curiosity. Phase 0 (bits, numbers, toolchain, shell) is next in the writing order; the rest of the book is built out of exactly those, one promise at a time.

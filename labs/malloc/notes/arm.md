@@ -41,7 +41,7 @@ qemu-aarch64 ./build/fixed
    AArch64 spills at `[sp-#4]` and returns in `x0`. The fault is identical:
    a pointer into a dead frame.
 3. **Memory ordering is weaker than x86 TSO.** Your C code compiles to the same
-   allocation calls, but the machine's memory model differs — phase 5 returns to
+   allocation calls, but the machine's memory model differs. Phase 5 returns to
    this when locks meet fences (DMB/DSB, LDAc/STLR).
 4. **Endianness default is little**, same as x86-64. All pointers are 64-bit,
    so `malloc` block sizes and header layout in the survey (Wilson et al.) still
