@@ -32,14 +32,10 @@ $(BUILDDIR)/fixed: tests/fixed.c | $(BUILDDIR)
 $(BUILDDIR)/epilogue: tests/epilogue.c | $(BUILDDIR)
 	$(CC) $(CFLAGS) $< -o $@
 
-run = sh -c '{ ./build-asan/$$0 2>&1 | grep -E "ERROR:|SUMMARY:|runtime error:|\bABORTING|in main tests|is located|freed by|previously allocated|Direct leak|leak of |The signal|Hint:" ; exit $${PIPESTATUS[0]} ; }'
-
 check:
+	$(MAKE) clean
 	$(MAKE) all USE_ASAN=1
-	@echo "== leak (expect failure) ==";     $(run) leak     && echo "leak NOT detected"     || echo "leak detected"
-	@echo "== doublefree (expect failure) =="; $(run) doublefree && echo "double-free NOT detected" || echo "double-free detected"
-	@echo "== dangling (expect failure) =="; $(run) dangling  && echo "dangling NOT detected" || echo "dangling detected"
-	@echo "== fixed (expect PASS) =="; ./build-asan/fixed && echo "fixed PASSED"
+	../../scripts/check-lab.sh . check.expectations
 
 plain:
 	$(MAKE) all

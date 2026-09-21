@@ -1,0 +1,14 @@
+# Expectations for labs/malloc (binaries built with USE_ASAN=1).
+#
+# Reference environment: GCC 14.2 sandbox; revalidated GCC 16.2.1 Fedora, 2026-09-21.
+# Diagnostic wording differs by toolchain: GCC reports SEGV (via a null-load
+# that UBSan also flags as `runtime error`); Clang 22 reports
+# `stack-use-after-return`. All are accepted; the `fail` class is what matters.
+#
+# epilogue: UB by design (a dead stack read may print 7); success is luck, so
+# assert nothing. See labs/malloc/notes/. Future coverage belongs on the
+# RETRIEVE side (a checkpoint asking why no diagnostic fires), not here.
+build-asan/leak|fail|LeakSanitizer
+build-asan/doublefree|fail|double-free
+build-asan/dangling|fail|SEGV|runtime error|use-after-scope|use-after-return
+build-asan/fixed|ok|fixed: 42
