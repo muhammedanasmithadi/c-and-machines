@@ -3,11 +3,11 @@ title = "C and Machines"
 description = "From first byte to complex systems. A self-paced course in C and the computer underneath it, taught from primary sources and proven against the machine."
 +++
 
-A program is a set of promises. You promise the compiler that your pointers point to live objects, that your arrays stay in bounds, that memory is returned exactly once. The machine keeps a ledger of every address, every allocation, every byte. Break a promise and the ledger shows it. Most of this book is about keeping those accounts so well that the machine never reports a discrepancy.
+A program is a set of promises. You promise the compiler that your pointers point to live objects, that your arrays stay in bounds, that memory is returned exactly once. The machine keeps a ledger of every address, every allocation, every byte. Break a promise and the ledger shows it. Most of this book is the practice of keeping those accounts: every pointer aimed at a live object, every array in bounds, every block returned exactly once.
 
-The goal is plain. By the last phase you will write, alone, the programs people build careers on: a shell that schedules jobs, an allocator a production service can trust, a concurrent server that survives its own load, an emulator that runs real machine code. Each is a small set of ideas, verified the plain way: run the code and read what it reports, in private, where a failure costs nothing.
+The goal is plain. By the last phase you will write, alone, substantial programs: a shell that schedules jobs, an allocator a production service can trust, a concurrent server that survives its own load, an emulator that runs real machine code. Each is a small set of ideas, verified the plain way: run the code and read what it reports, in private, where a failure costs nothing.
 
-Along the way you see what a machine actually is. Bits become bytes, then registers, stacks, caches, pages, processes, signals, networks. These are physical things with budgets and failure modes, all governed by a small number of laws you will meet again in every phase.
+Along the way you see what a machine actually is. Bits become bytes, then registers, stacks, caches, pages, processes, signals, networks. Each has budgets and failure modes, governed by a small number of laws you will meet again in every phase.
 
 This is a textbook written like an apprenticeship. Nothing rests on the author's word. Each module opens with a concrete program or a real question, plays it forward, shows the mechanism underneath, then proves the claim three ways: the specification, the runnable code, and the machine's own log. Reproduce it on your own machine, and the book becomes something you can check for yourself.
 
@@ -41,8 +41,8 @@ Every module follows one shape, held to a fixed standard:
 
 - **Local first.** Run `zola serve` and open the URL it prints. Handwriting in the margins is encouraged.
 - **You own the tools.** The build is one static binary; there is no framework between you and the prose. Read the source when you want to understand the book itself.
-- **Reproduce everything.** Every trace in this course comes from a real run on Fedora 44, x86-64, with the ARM path via QEMU. If your machine says otherwise, your machine is the truth — find out why.
-- **Versions are frozen, not forgotten.** Snapshots live under `content/v0.x/`, each recorded with a `jj bookmark`. The header badge tells you which edition you hold.
+- **Reproduce everything.** Every trace in this course comes from a real run on Fedora 44, x86-64, with the ARM path via QEMU. If your machine says otherwise, your machine is the truth. Find out why.
+- **Versions are frozen, not forgotten.** Snapshots live under `content/v0.x/`, each recorded with a `jj bookmark`. Every module's dateline names the edition and the reference build it was checked against.
 
 ## Source canon
 
