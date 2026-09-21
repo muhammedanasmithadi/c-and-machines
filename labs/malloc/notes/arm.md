@@ -1,7 +1,6 @@
 # AArch64 notes for the malloc lab
 
-The lesson's three lifetime failures are architecture-neutral: lifetime is C language law,
-not a register thing. This lab proves that by running the same sources under an
+The lesson's three lifetime failures are architecture-neutral: lifetime is language law, not register behavior. This lab shows that by running the same sources under an
 AArch64 Linux.
 
 ## Cross toolchain (Fedora)
@@ -51,5 +50,6 @@ qemu-aarch64 ./build/fixed
 ## Gate for the ARM leg of the lab
 
 `build/fixed` must run under `qemu-aarch64` and print `fixed: 42`.
-The three failure binaries must be seen by valgrind/ASan as failing on x86-64
-(the same sources, the same lifetime law), which proves lifetime is C law, not one ISA's habit.
+The three failure binaries must fail under valgrind/ASan on x86-64 from the
+same sources. Matching verdicts on both ISAs show the law sits in the
+language, not in one instruction set.
