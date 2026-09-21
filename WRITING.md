@@ -79,6 +79,8 @@ doc:
   closing may name it once more. In between, plain prose.
 - **One em-dash per paragraph at most.** Sentence length is the rhythm:
   some spare, some full, some routine. Do not machine-gun the dashes.
+  Em-dashes are a budget, not a habit: if the sentence after the dash can
+  stand alone, give it a period instead.
 
 ## Full articulation
 
