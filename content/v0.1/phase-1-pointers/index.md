@@ -44,6 +44,8 @@ Either outcome is the compiler's legal answer, and both are worth seeing with yo
 
 ## Why the address is invalid
 
+You can see why someone would expect `7`. Nothing overwrote that stack slot between the return and the read, so the value should still be sitting there. The standard says otherwise. Here is why.
+
 `winner` returns `&local`. The pointer keeps its address. The object it names is gone.
 
 `local` has **automatic storage duration**. Section 6.2.4 of the C standard sets its lifetime: the object exists from entry into the block until exit from the block. When `winner` returns, the block exits and the lifetime ends. The pointer still holds the old address, but no object lives there anymore.
@@ -126,6 +128,8 @@ The object lives until `free`, and ownership moves to the caller. The lab builds
 
 The rule for this section: **a pointer is valid only while the object it names is alive.** Make the pointer's lifetime fit the object's, or the object's fit the pointer's.
 
+Compile both variants. Call each one twice in a row and print both results. The static version hands back the same address both times. The heap version hands back two addresses, and each needs exactly one `free`. Then decide: which contract can your caller keep?
+
 ## The allocator's ledger
 
 `malloc` manages the heap with a ledger. The ledger records every block: its address, its size, whether it is free. For the full mechanism, read [CS:APP §9.9](https://csapp.cs.cmu.edu/) and the [Wilson survey](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf). Both describe real allocators as this bookkeeping plus a search policy.
@@ -193,7 +197,7 @@ The four listings fall into two camps. Clang computes the slot's address and ret
 
 ## The heap, step by step
 
-Walk the ledger yourself. Each press of the button runs one `malloc` or `free` and shows what the ledger does.
+Walk the ledger yourself. Before each press, say which block the allocator must split or coalesce. Each press runs one `malloc` or `free` and shows what the ledger does.
 
 {% raw %}
 <div class="memmap-stepper" data-memmap-step>
@@ -228,7 +232,7 @@ Watch what the sum does across all seven steps: it stays 48 bytes the whole time
   </div>
   <div class="proof-block">
     <p class="proof-label">2 · The specification</p>
-    <p>The C standard, quoted above, is the contract. The code violates it; the tools then tell you exactly how.</p>
+    <p>The C standard, quoted above, is the contract. `dangling.c` reads through `&x` after the block exits (line 13), `doublefree.c` returns one block twice (lines 11–12), `leak.c` never returns its 40 bytes. The tools then tell you exactly how.</p>
   </div>
   <div class="proof-block">
     <p class="proof-label">3 · The log</p>
