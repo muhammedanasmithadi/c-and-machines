@@ -1,4 +1,4 @@
-base_url = "https://localhost/"
+base_url = "/"
 title = "C and Machines"
 description = "A self-paced course from first byte to complex systems, in C and on the metal."
 

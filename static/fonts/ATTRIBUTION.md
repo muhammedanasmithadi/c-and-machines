@@ -6,6 +6,6 @@ The book ships two font families under `static/fonts/`.
   the serif face of the prose, from the public ET-Book project
   (https://edwardtufte.github.io/et-book/).
   Kept here with attribution; see the project page for license terms.
-- **JetBrains Mono** (`jetbrains-400.woff2`, `jetbrains-italic.woff2`, `jetbrains-600.woff2`):
-  the mono face of code and machine output, (c) JetBrains,
+- **Space Mono** (`space-mono-400.woff2`, `space-mono-400-italic.woff2`, `space-mono-700.woff2`):
+  the mono face of code and machine output, (c) Colophon Foundry,
   under the SIL Open Font License 1.1 (https://scripts.sil.org/OFL).
