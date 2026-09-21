@@ -306,11 +306,11 @@ Read in this order: K&R **Ch 5–6** ([pointers, structures](https://9p.io/cm/cs
 
 ## What's next
 
-Phase 2 lowers C to machine code, and you watch a compiler spill, save, and restore registers — always respecting lifetime, never using what it has already released. The stack frame you saw above becomes the centerpiece, examined in depth.
+Phase 2 lowers C to machine code. You will watch a compiler spill, save, and restore registers, respecting lifetime at each step and never using what it has released. The stack frame from this chapter becomes the centerpiece, examined in depth.
 
-Phase 4 brings the same bookkeeping to the whole system: virtual memory, page tables, and the kernel's own ledger. A pointer's validity then depends on page residency, not just your `malloc` call. Lifetime at the small scale reads the same as lifetime at the large scale.
+Phase 4 brings the same bookkeeping to the whole system: virtual memory, page tables, and the kernel's own ledger. A pointer's validity then depends on page residency, not just your `malloc` call. Lifetime at the small scale follows the same rule as lifetime at the large scale.
 
-The rule, one last time: **an address is only as good as the object it points to.** Get the lifetimes right, and the output you observe matches the standard's promises.
+The rule, one last time: **an address is only as good as the object it points to.** Match each pointer's lifetime to its object, and the output you observe matches the standard's promises.
 
 ---
 
