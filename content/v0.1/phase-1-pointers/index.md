@@ -44,13 +44,13 @@ Either outcome is the compiler's legal answer, and both are worth seeing with yo
 
 ## Why the address is invalid
 
-`winner` returns `&local`. At that moment the pointer is fine; the object it points to is not.
+`winner` returns `&local`. The pointer keeps its address. The object it names is gone.
 
-`local` has **automatic storage duration**. The C standard defines its lifetime in section 6.2.4: the object exists from entry into the block to exit from the block. When `winner` returns, the block exits, the object's lifetime ends, and the pointer still holds the old address. No object lives there anymore.
+`local` has **automatic storage duration**. Section 6.2.4 of the C standard sets its lifetime: the object exists from entry into the block until exit from the block. When `winner` returns, the block exits and the lifetime ends. The pointer still holds the old address, but no object lives there anymore.
 
-That pointer is **dangling**. It names an address whose object no longer lives there. The address is unchanged; the object the standard guarantees you, the `points` you wrote, is gone.
+That pointer is **dangling**. It names an address whose object no longer lives there. The address is unchanged, but the standard guarantees nothing behind it now.
 
-Two facts from the C standard make this a property of the language, not a quirk of one compiler. Both come from **6.2.4p2**:
+This is a property of the language, and two sentences from **6.2.4p2** state it:
 
 - "If an object is referred to outside of its lifetime, the behavior is undefined."
 - "The value of a pointer becomes indeterminate when the object it points to (or just past) reaches the end of its lifetime."
@@ -59,11 +59,11 @@ The standard chooses its word carefully: the value becomes *indeterminate*. On t
 
 ## The three ways lifetime goes wrong
 
-Every lifetime bug you will meet is one of three failures of bookkeeping:
+Every lifetime bug is one of three failures of bookkeeping:
 
 1. **Use after free.** You read or write through a pointer after the object's lifetime ended. The opening program does this: `winner` returns `&local`, and `w->points` reads past the block's exit.
 2. **Double free.** Two paths release the same block. The allocator's record for the block breaks, and the next `malloc` returns a block that two owners believe is theirs.
-3. **Leak.** Memory you no longer need, never returned. Small in a test, unbounded in a server. The process grows until it runs out of address space or the kernel kills it.
+3. **Leak.** Memory you no longer need, never returned. Small in a test, unbounded in a server. The process grows until it exhausts its address space or the kernel terminates it.
 
 All three share a root cause: a mismatch between when you believe an object exists and when the storage is still yours to use.
 
@@ -73,13 +73,13 @@ All three share a root cause: a mismatch between when you believe an object exis
 | Double free | It is safe to `free` twice | One owner per block; you are not it |
 | Leak | I will `free` it later | The allocator reclaims blocks only when told |
 
-The three bugs cost differently. A leak spends cycles and memory: the process RSS climbs, the allocator hands out new pages, latency climbs. A double free spends correctness, then can corrupt data you believed was safe. Use after free is the worst to chase: the answers are correct on your laptop under one compiler, and wrong on another machine under the same source.
+The three bugs cost differently. A leak costs memory and time: process RSS climbs as the allocator hands out new pages, and latency follows. A double free costs correctness first: the next `malloc` can hand one block to two owners, and each writes over the other. Use after free is the hardest to chase. The program prints the right answer on your laptop under one compiler, and the wrong answer on another machine from the same source.
 
-No operator in any of the three files is wrong. In each, the mistake is a misjudged lifetime.
+Each of the three files uses its operators correctly. The mistake in each is a misjudged lifetime.
 
 ## Lifetime, not syntax
 
-The C standard divides storage into four durations. Each row says when the object exists and when the storage stops being yours. The terms are the machine's; your code must fit them.
+The C standard divides storage into four durations. Each row says when the object exists and when the storage stops being yours. These are the machine's terms. The code must fit them.
 
 | Duration | Object exists | Stop point |
 |---|---|---|
@@ -88,9 +88,9 @@ The C standard divides storage into four durations. Each row says when the objec
 | Thread | thread's lifetime | at thread exit |
 | Allocated | until `free` | at `free` |
 
-<aside class="sidenote"><a href="http://booksite.elsevier.com/9780128017333/">Patterson and Hennessy</a> (Chapter 2, "Instructions: Language of the Computer") map each of these rows to a distinct region of virtual memory. The four rows are not abstract labels; they correspond to the stack, the data segment, the TLS block, and the heap — four regions the OS places at distinct addresses.</aside>
+<aside class="sidenote"><a href="http://booksite.elsevier.com/9780128017333/">Patterson and Hennessy</a> (Chapter 2, "Instructions: Language of the Computer") place each of these rows in a distinct region of virtual memory. The four rows name the stack, the data segment, the TLS block, and the heap: four regions the OS places at distinct addresses.</aside>
 
-The mistake in `winner` is simple to state: it returned a pointer to an object from the "Automatic" row, and the caller used that pointer after the block exited.
+The mistake in `winner` fits one row of that table: it returned a pointer to an Automatic object, and the caller used it after the block exited.
 
 ## Two correct designs
 
