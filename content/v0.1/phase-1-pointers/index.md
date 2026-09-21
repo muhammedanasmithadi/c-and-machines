@@ -152,6 +152,8 @@ A pointer is an address, and an address is a number. The difference between the 
   </ul>
   <div class="tab-panel" role="tabpanel">
 <pre><code>; clang 22, x86-64, -O0, epilogue.c — winner(): the address survives
+winner:
+    pushq   %rbp
     movq    %rsp, %rbp
     movl    $7, -4(%rbp)     ; local.points = 7
     leaq    -20(%rbp), %rax  ; RAX = address of local (the whole struct)
@@ -159,7 +161,9 @@ A pointer is an address, and an address is a number. The difference between the 
     retq                     ; return that address</code></pre>
   </div>
   <div class="tab-panel" role="tabpanel" hidden>
-<pre><code>; clang 22, AArch64, -O0, epilogue.c — winner(): the address survives      ; carve a frame for local
+<pre><code>; clang 22, AArch64, -O0, epilogue.c — winner(): the address survives
+winner:
+    sub     sp, sp, #32      ; carve a frame for local
     add     x0, sp, #12      ; X0 = address of local (the whole struct)
     mov     w8, #7
     str     w8, [sp, #28]    ; local.points = 7
