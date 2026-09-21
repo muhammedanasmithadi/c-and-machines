@@ -151,9 +151,7 @@ A pointer is an address, and an address is a number. The difference between the 
     <li><button role="tab">GCC -O2</button></li>
   </ul>
   <div class="tab-panel" role="tabpanel">
-<pre><code>; clang 22, -O0, epilogue.c — winner(): the address survives
-winner:
-    pushq   %rbp
+<pre><code>; clang 22, x86-64, -O0, epilogue.c — winner(): the address survives
     movq    %rsp, %rbp
     movl    $7, -4(%rbp)     ; local.points = 7
     leaq    -20(%rbp), %rax  ; RAX = address of local (the whole struct)
@@ -161,9 +159,7 @@ winner:
     retq                     ; return that address</code></pre>
   </div>
   <div class="tab-panel" role="tabpanel" hidden>
-<pre><code>; clang 22, -O0, epilogue.c — winner(): the address survives
-winner:
-    sub     sp, sp, #32      ; carve a frame for local
+<pre><code>; clang 22, AArch64, -O0, epilogue.c — winner(): the address survives      ; carve a frame for local
     add     x0, sp, #12      ; X0 = address of local (the whole struct)
     mov     w8, #7
     str     w8, [sp, #28]    ; local.points = 7
@@ -307,6 +303,8 @@ Read in this order: K&R **Ch 5–6** ([pointers, structures](https://9p.io/cm/cs
 ## What's next
 
 Phase 2 lowers C to machine code. You will watch a compiler spill, save, and restore registers, respecting lifetime at each step and never using what it has released. The stack frame from this chapter becomes the centerpiece, examined in depth.
+
+Phase 3 puts that machine code on a real processor, with caches and a memory hierarchy. You will measure your own program's cache behavior and explain it.
 
 Phase 4 brings the same bookkeeping to the whole system: virtual memory, page tables, and the kernel's own ledger. A pointer's validity then depends on page residency, not just your `malloc` call. Lifetime at the small scale follows the same rule as lifetime at the large scale.
 
