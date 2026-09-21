@@ -108,7 +108,7 @@ Entry *winner(void) {
 }
 ```
 
-The object survives the return: one copy exists for the whole program, and the caller may use the pointer at any time. The cost is reentrancy. Two callers that each expect their own result now share one object, so the second call overwrites the first. If your program needs distinct results per call, this design breaks it. Section 6.2.4 spells out exactly what static duration provides.
+The object survives the return. One copy exists for the whole program, and the caller may use the pointer at any time. The cost is reentrancy: two callers that each expect their own result now share one object, so the second call overwrites the first. If your program needs distinct results per call, this design breaks. Section 6.2.4 defines what static duration provides.
 
 The second fix hands the caller responsibility for the object's lifetime. Allocate the object on the heap, and let the caller free it.
 
@@ -122,21 +122,21 @@ Entry *winner(void) {
 }
 ```
 
-The object lives until `free`, and ownership moves to the caller. This is the design you will use most in real code, and the design behind the lab.
+The object lives until `free`, and ownership moves to the caller. The lab builds on this design.
 
-Rule, stated once: **a pointer is valid only while the object it names is alive.** Make the pointer's lifetime fit the object's, or the object's fit the pointer's. Never leave them mismatched.
+The rule for this section: **a pointer is valid only while the object it names is alive.** Make the pointer's lifetime fit the object's, or the object's fit the pointer's.
 
 ## The allocator's ledger
 
-`malloc` manages the heap with a ledger. The ledger records every block: its address, its size, whether it is free. For the whole mechanism, read [CS:APP §9.9](https://csapp.cs.cmu.edu/) and the [Wilson survey](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf); both describe real allocators as precisely this bookkeeping plus a search policy.
+`malloc` manages the heap with a ledger. The ledger records every block: its address, its size, whether it is free. For the full mechanism, read [CS:APP §9.9](https://csapp.cs.cmu.edu/) and the [Wilson survey](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf). Both describe real allocators as this bookkeeping plus a search policy.
 
-Three facts about the ledger make the three bugs inevitable if you violate it:
+Three facts about the ledger explain the three bugs:
 
 - `free(p)` removes your block from the ledger. From that moment, the block belongs to the allocator, not to you. Using `p` after `free` reads a block whose record no longer shows you.
 - Calling `free(p)` twice happens when two parts of a program both believe they own the same block. The ledger is not designed for two owners.
 - The allocator reclaims blocks only when told. A block you never free stays in the ledger, marked occupied, even if nothing references it.
 
-The ledger is the spec. The proof below runs the four programs against the tools and shows what the ledger does with each.
+The proof below runs the four programs against the tools and shows what the ledger records for each.
 
 ## What the machine does with it
 
