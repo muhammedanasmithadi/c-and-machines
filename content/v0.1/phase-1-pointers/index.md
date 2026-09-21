@@ -36,11 +36,11 @@ int main(void) {
 }
 ```
 
-Compile it twice and compare what you get with what you predicted. On the reference build, GCC 16 on Fedora 44 x86-64, both binaries fault — the `-O0` one and the `-O2` one. At `-O0` the compiler has already replaced the would-be address with `NULL`, and `-O2` does the same. Clang 22, from the same source, keeps the literal address of the dead stack slot, and the program prints whatever reuse left in that slot. The same source produced a crash on one toolchain and a printed value on the other.
+Compile it twice, then compare the result with your prediction. On the reference build (GCC 16, Fedora 44, x86-64) both binaries crash, at `-O0` and at `-O2`. The compiler has already replaced the would-be address with `NULL`. Clang 22, given the same source, keeps the literal address of the dead stack slot, and the program prints whatever the next occupant of that slot left behind. One source, two toolchains: a crash on one, a printed value on the other.
 
-You already have the check you need here. If your run also crashes, or if it prints a value, either outcome is the compiler's legal answer. The lesson begins at the cause: why does a pointer to a local variable stop being good the moment the function returns?
+Either outcome is the compiler's legal answer, and both are worth seeing with your own run. The lesson starts at the cause. Why does a pointer to a local variable stop being good the moment the function returns?
 
-<aside class="sidenote">Undefined behavior does not mean random. It means the standard makes no promise about this program, so each compiler may do anything at all, including replacing the address with `NULL`. That is exactly what this lesson's dangling case shows.</aside>
+<aside class="sidenote">The standard makes no promise about this program. That is what undefined behavior means: each compiler may do anything at all, including replacing the address with `NULL`. The dangling case in this lesson shows exactly that.</aside>
 
 ## Why the address is invalid
 
