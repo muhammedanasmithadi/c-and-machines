@@ -140,7 +140,7 @@ The proof below runs the four programs against the tools and shows what the ledg
 
 ## What the machine does with it
 
-A pointer is an address, and an address is a number, so the difference between the two compilers shows up in the instructions. Where does the returned value come from? The four tabs compile the same `epilogue.c` on two ISAs with two compilers.
+A pointer is an address, and an address is a number. The difference between the two compilers shows up in the instructions that produce that number. The four tabs compile the same `epilogue.c` on two ISAs with two compilers. Read each `winner` and find where the returned value comes from.
 
 {% raw %}
 <div class="tabs" role="tablist">
@@ -189,7 +189,7 @@ winner:
 </div>
 {% endraw %}
 
-The four listings sit in two camps. Clang computes the slot's address and returns it, and the stack slot survives into `main`, so the read may still hit the `7`. The `-O0` run printed `7` because nothing had reused the slot yet; the `-O2` run printed a junk value because `printf`'s own machinery had already been there. GCC replaces the address with `0x0` before the program runs. At `-O0` it still stores `7` to the dead slot, then folds the address anyway; at `-O2` the whole body collapses to `xor %eax,%eax; ret`, and a NULL dereference is the crash in the log. Every listing here is the machine's answer. The rule does not change with the architecture.
+The four listings fall into two camps. Clang computes the slot's address and returns it. The stack slot survives into `main`, so the read may still find the `7`. The `-O0` run printed `7` because nothing had reused the slot yet. The `-O2` run printed junk because `printf`'s own frame had already overwritten it. GCC takes the other path. It replaces the address with `0x0` before the program runs. At `-O0` it still stores `7` to the dead slot, then folds the address anyway. At `-O2` the whole body collapses to `xor %eax,%eax; ret`, and the NULL dereference is the crash in the log. Each listing is the machine's answer on that toolchain. The rule is the same on both architectures.
 
 ## The heap, step by step
 
@@ -215,7 +215,7 @@ Walk the ledger yourself. Each press of the button runs one `malloc` or `free` a
 
 Follow the chain: `malloc(8)` splits the free 48-byte block into an 8-byte occupant and a 40-byte remainder. The second `malloc(8)` splits again. `malloc(32)` takes the rest. Each free returns its block to the allocator's ledger. The final free coalesces the adjacent free blocks back into one 48-byte block the next `malloc` can use whole.
 
-Watch what the sum does across all seven steps: it stays 48 bytes the whole time. Splits and coalescing change which block is occupied, never how much memory the ledger accounts for. That invariant is what an allocator must preserve, and it is what misuse of pointers breaks.
+Watch what the sum does across all seven steps: it stays 48 bytes the whole time. Splits and coalescing change which block is occupied, never how much memory the ledger accounts for. An allocator must preserve that invariant. Each of the three bugs breaks it in its own way.
 
 <aside class="sidenote"><a href="https://csapp.cs.cmu.edu/3e/docs/dsa.pdf">Wilson et al. (1995)</a> name segregated free lists as one allocator strategy; <a href="https://lwn.net/Articles/250967/">Drepper (2007)</a> explains why split and free cost is really a cache cost. Both are in the reading list. Phase 9 (allocation at scale) uses this vocabulary without further introduction.</aside>
 
@@ -272,9 +272,9 @@ fixed: 42
 fixed PASSED
 ```
 
-Every line here is the machine's own. The `==NNNN==` masks the process id, which changes each run; the heap address `0x7ac...` changes with the allocator's state. Everything else is as the tools wrote it. The Makefile in the lab filters each trace to its verdict lines — run it yourself and the full stack, the register dump, and the exact heap addresses show up unshortened. Compiler 16.2.1 with `-fsanitize=address,undefined`, Fedora 44, x86-64, 2026-09-16.
+Every line here is the machine's own. The `==NNNN==` masks the process id, which changes each run; the heap address `0x7ac...` changes with the allocator's state. Everything else is as the tools wrote it. The Makefile in the lab filters each trace to its verdict lines. Run it yourself for the full stack, the register dump, and the exact heap addresses, unshortened. Reference: GCC 16.2.1 with `-fsanitize=address,undefined`, Fedora 44, x86-64, 2026-09-16.
 
-The three verdicts behave differently. The leak exits 0, and an exit code of zero is not a pass. Only a tool that checks the ledger at exit sees the 40 bytes. `valgrind --leak-check=full` shows it plainly:
+Each verdict needs its own reading. The leak exits 0, and an exit code of zero is not a pass. Only a tool that checks the ledger at exit sees the 40 bytes. `valgrind --leak-check=full` shows it plainly:
 
 ```txt
 $ valgrind --leak-check=full ./build/leak
@@ -289,9 +289,9 @@ leak: phantom
 ==NNNN== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
 ```
 
-(Same masking: `==NNNN==` is the process id.) Valgrind 3.27.1 needs no special build flags — it runs the plain `./build/leak` and reads what the program does from the side.
+(Same masking: `==NNNN==` is the process id.) Valgrind 3.27.1 needs no special build flags. It runs the plain `./build/leak` and watches what the program does from the side.
 
-The double-free is caught at the second `free`, exactly as the code demands. The dangling case is where GCC 16 does something worth a close look. `return &local` is undefined behavior, and the compiler is allowed to do anything with UB — so it folds the would-be address into `NULL`. The UndefinedBehaviorSanitizer line ("load of null pointer") and the SEGV on address 0x000000000000 record that fold exactly. The crash is deterministic, and the cause has one source: line 13 of `dangling.c`.
+The double-free is caught at the second `free`, exactly as the code demands. The dangling case deserves a close look. `return &local` is undefined behavior, so the compiler may do anything with it. GCC 16 folds the would-be address into `NULL`. The UndefinedBehaviorSanitizer line ("load of null pointer") and the SEGV on address 0x000000000000 record that fold. The crash is deterministic. Its cause is line 13 of `dangling.c`.
 
 ## Practice
 
