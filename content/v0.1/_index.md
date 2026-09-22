@@ -1,6 +1,6 @@
 +++
 title = "v0.1 — Pointers, Memory, and the Machine"
-description = "The first edition: one phase on pointers and lifetime, proven against GCC, clang, Valgrind, and QEMU."
+description = "The first edition: two phases, the toolchain and then pointers and lifetime, every claim checked against real runs."
 +++
 
 v0.1 holds two finished phases. Later editions fill the rest of the map.
