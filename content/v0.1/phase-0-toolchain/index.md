@@ -150,7 +150,7 @@ Read in this order: K&R 2e ([the C book](https://9p.io/cm/cs/cbook/)), **Ch 2** 
 
 ## What's next
 
-Phase 1 takes up the program you just built: [Pointers and Lifetime](@/v0.1/phase-1-pointers/index.md). The stages above produce bytes; the next chapter asks how long each byte stays yours. Carry that question across — it is the whole of the next proof. The toolchain you met here is the instrument every later proof uses.
+Phase 1 takes up the program you just built: [Pointers and Lifetime](@/v0.1/phase-1-pointers/index.md). The stages above produce bytes; the next chapter asks how long each byte stays yours. Carry that question across: it is the whole of the next proof. The toolchain you met here is the instrument every later proof uses.
 
 The rule, one last time: **every byte in the running program was put there by a tool you invoked.** Learn the tools in order, and any program opens the same way: stage by stage, file by file.
 

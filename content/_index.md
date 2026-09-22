@@ -46,7 +46,7 @@ Every module follows one shape, held to a fixed standard:
 
 ## Source canon
 
-This book teaches from primary sources, not summaries of them. When a paragraph rests on a reference, you are told which one and why. Two gates admit a source. Primary gate: the artifact itself (a standard, a measurement) from the person who made it. Public gate: two or more independent university adoptions, or sustained technical praise with specifics — never popularity.
+This book teaches from primary sources, not summaries of them. When a paragraph rests on a reference, you are told which one and why. Two gates admit a source. Primary gate: the artifact itself (a standard, a measurement) from the person who made it. Public gate: two or more independent university adoptions, or sustained technical praise with specifics. Never popularity.
 
 - Kernighan & Ritchie, [*The C Programming Language*](https://9p.io/cm/cs/cbook/), 2e
 - Bryant & O'Hallaron, [*Computer Systems: A Programmer's Perspective*](https://csapp.cs.cmu.edu/), 3e (CS:APP)

@@ -3,7 +3,7 @@
 {% block title %}{{ section.title }} — {% endblock %}
 {% block description %}{{ section.description | default(value=config.description) }}{% endblock %}
 {% block pageclass %}section{% endblock %}
-{% block crumb %}<span class="crumb-sep">→</span>{{ section.title }}{% endblock %}
+{% block crumb %}<span class="crumb-sep">/</span>{{ section.title }}{% endblock %}
 
 {% block content %}
   <p class="kicker">{{ section.extra.kicker | default(value="Edition") }}</p>

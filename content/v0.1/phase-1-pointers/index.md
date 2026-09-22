@@ -232,7 +232,7 @@ Watch what the sum does across all seven steps: it stays 48 bytes the whole time
 <div class="proof">
   <div class="proof-block">
     <p class="proof-label">1 · The code</p>
-    <p>The lab for this lesson, <code>labs/malloc/</code>, contains the four programs (<code>leak.c</code>, <code>doublefree.c</code>, <code>dangling.c</code>, <code>fixed.c</code>) — one per failure mode plus the fix, each in <code>tests/</code>. Run each against the machine's own tools.</p>
+    <p>The lab for this lesson, <code>labs/malloc/</code>, holds four programs in <code>tests/</code>, one per failure mode plus the fix: <code>leak.c</code>, <code>doublefree.c</code>, <code>dangling.c</code>, <code>fixed.c</code>. Run each against the machine's own tools.</p>
   </div>
   <div class="proof-block">
     <p class="proof-label">2 · The specification</p>
