@@ -79,6 +79,8 @@ doc:
   closing may name it once more. In between, plain prose.
 - **One em-dash per paragraph at most.** Sentence length is the rhythm:
   some spare, some full, some routine. Do not machine-gun the dashes.
+  Em-dashes are a budget, not a habit: if the sentence after the dash can
+  stand alone, give it a period instead.
 
 ## Full articulation
 
@@ -102,6 +104,20 @@ output when you can show it.
   only when told.").
 - Present tense throughout. The book describes how things work now, on the
   machine the reader has.
+
+## Metaphors and terminology
+
+- **Metaphors must be earned.** Introduce a metaphor by its mechanism once
+  (the ledger is a literal record of blocks before it is anything else), then
+  it may recur freely. One metaphor system per paragraph; money and law are
+  the house systems, the rest are tourists.
+- **Tricolons are currency.** Spend one per page. A second tricolon must
+  advance, never echo.
+- **Terminology under oath.** Functions are not operators; frames exist only
+  while their function runs; "deterministic" names a build, not a language.
+  Vocabulary errors break the contract faster than anything else.
+- **Every page must run on a stranger's machine.** Relative links, pinned
+  versions, dateline intact. Verify through the public URL, never localhost.
 
 ## What a module must contain
 
@@ -150,6 +166,9 @@ is irrelevant or the chapter's structure has failed.
 - [ ] An articulate voice, at the reader's service.
 - [ ] No triadic slogans, no not-X-but-Y openers, no sermon-you.
 - [ ] No drama words (die, 3 AM, moods, lore, phantom, magic).
-- [ ] At most one em-dash per paragraph.
+- [ ] At most one em-dash per paragraph (preflight enforces).
 - [ ] One sharp rule sentence per section.
 - [ ] The reader has a job in every section: predict, run, read, fix.
+- [ ] Metaphors earned by mechanism; one system per paragraph.
+- [ ] No second tricolon that echoes the first.
+- [ ] Versions pinned; links relative (build output grep-clean).
