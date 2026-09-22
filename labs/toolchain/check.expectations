@@ -1,0 +1,6 @@
+# Expectations for labs/toolchain (plain build, no sanitizers needed:
+# every fixture must succeed — the lesson is construction, not failure).
+#
+# Reference environment: GCC 16.2.1, Fedora 44, x86-64, 2026-09-22.
+build/hello|ok|toolchain: 42
+build/sizes|ok|char=1 int=4 long=8 ptr=8
