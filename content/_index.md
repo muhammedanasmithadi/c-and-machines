@@ -19,7 +19,7 @@ Eight phases carry you from the first byte to working systems. Each phase ends w
 |---|---|---|
 | 0 | Bits, numbers, the C toolchain, the shell | Build a C program by hand, byte by byte |
 | [1](@/v0.1/phase-1-pointers/index.md) | C mastery: pointers, memory, build systems | Clean, leak-free C under ASan + Valgrind |
-| 2 | Machine language, x86-64 and AArch64 | Read any disassembly; translate C to both ISAs |
+| [2](@/v0.1/phase-2-machine/index.md) | Machine language, x86-64 and AArch64 | Read any disassembly; translate C to both ISAs |
 | 3 | Processor, optimizing, memory hierarchy | Measure and explain your program's cache behavior |
 | 4 | Linking, virtual memory, allocators | A `malloc` package that passes stress |
 | 5 | Processes, signals, I/O, concurrency, networks | A shell with jobs; a concurrent Tiny server |
