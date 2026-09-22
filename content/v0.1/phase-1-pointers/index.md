@@ -13,7 +13,7 @@ ref_build = "GCC 16.2.1 · Fedora 44 x86-64"
 <p class="attribution">— the rule, stated in advance, proved below</p>
 </div>
 
-Here is a short C program, in a file named `epilogue.c` for the function epilogue where `local`'s lifetime ends. Predict what it prints, then run it.
+Here is a short C program, in a file named `epilogue.c` for the function epilogue where the lifetime of `local` ends. Predict what it prints, then run it.
 
 <div class="code-label">epilogue.c</div>
 
