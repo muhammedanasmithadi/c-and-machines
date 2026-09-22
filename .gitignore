@@ -1,3 +1,4 @@
 public/
 labs/malloc/build/
 labs/malloc/build-asan/
+labs/toolchain/build/
