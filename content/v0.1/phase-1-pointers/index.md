@@ -224,7 +224,7 @@ Follow the chain: `malloc(8)` splits the free 48-byte block into an 8-byte occup
 
 Watch what the sum does across all seven steps: it stays 48 bytes the whole time. Splits and coalescing change which block is occupied, never how much memory the ledger accounts for. An allocator must preserve that invariant. Each of the three bugs breaks it in its own way.
 
-<aside class="sidenote"><a href="https://csapp.cs.cmu.edu/3e/docs/dsa.pdf">Wilson et al. (1995)</a> name segregated free lists as one allocator strategy; <a href="https://lwn.net/Articles/250967/">Drepper (2007)</a> explains why split and free cost is really a cache cost. Both are in the reading list. Phase 9 (allocation at scale) uses this vocabulary without further introduction.</aside>
+<aside class="sidenote"><a href="https://csapp.cs.cmu.edu/3e/docs/dsa.pdf">Wilson et al. (1995)</a> name segregated free lists as one allocator strategy; <a href="https://lwn.net/Articles/250967/">Drepper (2007)</a> explains why split and free cost is really a cache cost. Both are in the reading list. Phase 4 (allocation at scale) uses this vocabulary without further introduction.</aside>
 
 ## Proof in three parts
 

@@ -17,7 +17,7 @@ Eight phases carry you from the first byte to working systems. Each phase ends w
 
 | Phase | Territory | Exit artifact |
 |---|---|---|
-| 0 | Bits, numbers, the C toolchain, the shell | Build a C program by hand, byte by byte |
+| [0](@/v0.1/phase-0-toolchain/index.md) | Bits, numbers, the C toolchain, the shell | Build a C program by hand, byte by byte |
 | [1](@/v0.1/phase-1-pointers/index.md) | C mastery: pointers, memory, build systems | Clean, leak-free C under ASan + Valgrind |
 | 2 | Machine language, x86-64 and AArch64 | Read any disassembly; translate C to both ISAs |
 | 3 | Processor, optimizing, memory hierarchy | Measure and explain your program's cache behavior |
@@ -26,7 +26,7 @@ Eight phases carry you from the first byte to working systems. Each phase ends w
 | 6 | Compilers and object files | From C to relocation and back |
 | 7 | Capstones | Shell + malloc + server + emulator; stretch: a compiler |
 
-In v0.1, only Phase 1 is written; its row links to the chapter. The remaining rows are the road ahead.
+In v0.1, Phases 0 and 1 are written; their rows link to the chapters. The remaining rows are the road ahead.
 
 Every module follows one shape, held to a fixed standard:
 
@@ -63,4 +63,4 @@ High-quality practitioner writing is admitted case by case, against the same two
 
 ## Begin
 
-Start at [Phase 1](@/v0.1/phase-1-pointers/index.md) (the only phase written so far). It needs no prerequisites beyond a machine and curiosity. Phase 0 (bits, numbers, toolchain, shell) is next in the writing order; the rest of the book is built from those four, one promise at a time.
+Start at [Phase 0](@/v0.1/phase-0-toolchain/index.md) (the only prerequisites are a machine and curiosity). Phase 1 follows, with the address, the ledger, the proof, and the practice.
