@@ -2,3 +2,5 @@ public/
 labs/malloc/build/
 labs/malloc/build-asan/
 labs/toolchain/build/
+labs/asm/build/
+labs/asm/build-aarch64/

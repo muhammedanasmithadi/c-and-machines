@@ -26,7 +26,7 @@ Eight phases carry you from the first byte to working systems. Each phase ends w
 | 6 | Compilers and object files | From C to relocation and back |
 | 7 | Capstones | Shell + malloc + server + emulator; stretch: a compiler |
 
-In v0.1, Phases 0 and 1 are written; their rows link to the chapters. The remaining rows are the road ahead.
+In v0.1, Phases 0, 1, and 2 are written; their rows link to the chapters. The remaining rows are the road ahead.
 
 Every module follows one shape, held to a fixed standard:
 

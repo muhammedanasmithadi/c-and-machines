@@ -1,0 +1,6 @@
+# Expectations for labs/asm (native binary via the checker; the AArch64
+# binary runs under QEMU in the Makefile's check recipe, same verdict).
+#
+# Reference environment: GCC 16.2.1, Fedora 44, x86-64 host,
+# aarch64-linux-gnu-gcc 16.2.1, qemu-aarch64 10.2.2, 2026-09-22.
+build/add|ok|add: 42
