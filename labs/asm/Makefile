@@ -20,7 +20,7 @@ ALDFLAGS = -L$(CURDIR)/lib -Wl,--dynamic-linker=/usr/lib/ld-linux-aarch64.so.1
 BUILDDIR  = build
 ABUILDDIR = build-aarch64
 
-all: $(BUILDDIR)/add $(ABUILDDIR)/add $(BUILDDIR)/add.s $(ABUILDDIR)/add.s
+all: $(BUILDDIR)/add $(ABUILDDIR)/add $(BUILDDIR)/add.s $(ABUILDDIR)/add.s $(BUILDDIR)/add.objdump $(ABUILDDIR)/add.objdump
 
 $(BUILDDIR) $(ABUILDDIR):
 	mkdir -p $@
@@ -34,16 +34,24 @@ $(ABUILDDIR)/add: tests/add.c | $(ABUILDDIR)
 $(BUILDDIR)/add.s: tests/add.c | $(BUILDDIR)
 	$(CC) $(CFLAGS) -S $< -o $@
 
+$(BUILDDIR)/add.objdump: $(BUILDDIR)/add
+	objdump -d $< > $@
+
 $(ABUILDDIR)/add.s: tests/add.c | $(ABUILDDIR)
 	$(ACROSS) $(AFLAGS) -S $< -o $@
+
+$(ABUILDDIR)/add.objdump: $(ABUILDDIR)/add
+	aarch64-linux-gnu-objdump -d $< > $@
 
 check:
 	$(MAKE) clean
 	$(MAKE) all
 	../../scripts/check-lab.sh . check.expectations
-	$(QEMU) -L $(QSYSROOT) $(ABUILDDIR)/add | grep -q 'add: 42'
+	$(QEMU) -L $(QSYSROOT) $(ABUILDDIR)/add | grep 'add: 42'
 	test -s $(BUILDDIR)/add.s && grep -q '^add:' $(BUILDDIR)/add.s
 	test -s $(ABUILDDIR)/add.s && grep -q '^add:' $(ABUILDDIR)/add.s
+	grep -q '<add>:' $(BUILDDIR)/add.objdump
+	grep -q '<add>:' $(ABUILDDIR)/add.objdump
 
 plain:
 	$(MAKE) all
