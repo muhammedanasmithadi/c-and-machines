@@ -10,7 +10,7 @@ description = "Phase 1 explains storage duration, why a returned address can be 
 <p class="attribution">— the rule, stated in advance, proved below</p>
 </div>
 
-Here is a short C program. Predict what it prints, then run it.
+Here is a short C program, in a file named `epilogue.c` for the function epilogue where `local`'s lifetime ends. Predict what it prints, then run it.
 
 <div class="code-label">epilogue.c</div>
 
@@ -72,12 +72,12 @@ All three share a root cause: a mismatch between when you believe an object exis
 | Bug | Belief | Machine's rule |
 |---|---|---|
 | Use after free | Object outlives its use | Lifetime ends; the value is indeterminate |
-| Double free | It is safe to `free` twice | One owner per block; you are not it |
+| Double free | It is safe to `free` twice | Each block is returned once; the second `free` is a stranger's call, even from the same hand |
 | Leak | I will `free` it later | The allocator reclaims blocks only when told |
 
 The three bugs cost differently. A leak costs memory and time: process RSS climbs as the allocator hands out new pages, and latency follows. A double free costs correctness first: the next `malloc` can hand one block to two owners, and each writes over the other. Use after free is the hardest to chase. The program prints the right answer on your laptop under one compiler, and the wrong answer on another machine from the same source.
 
-Each of the three files uses its operators correctly. The mistake in each is a misjudged lifetime.
+The syntax in each case is correct. The mistake in each is a misjudged lifetime.
 
 ## Lifetime, not syntax
 
@@ -110,7 +110,7 @@ Entry *winner(void) {
 }
 ```
 
-The object survives the return. One copy exists for the whole program, and the caller may use the pointer at any time. The cost is reentrancy: two callers that each expect their own result now share one object, so the second call overwrites the first. If your program needs distinct results per call, this design breaks. Section 6.2.4 defines what static duration provides.
+The object survives the return. One copy exists for the whole program, and the caller may use the pointer at any time. The cost: the function is no longer reentrant. Two callers that each expect their own result now share one object, so the second call overwrites the first. If your program needs distinct results per call, this design breaks. Section 6.2.4 defines what static duration provides.
 
 The second fix hands the caller responsibility for the object's lifetime. Allocate the object on the heap, and let the caller free it.
 
@@ -144,7 +144,7 @@ The proof below runs the four programs against the tools and shows what the ledg
 
 ## What the machine does with it
 
-A pointer is an address, and an address is a number. The difference between the two compilers shows up in the instructions that produce that number. The four tabs compile the same `epilogue.c` on two ISAs with two compilers. Read each `winner` and find where the returned value comes from.
+A pointer is an address, and an address is a number. The difference between the two compilers shows up in the instructions that produce that number. The four tabs show the same `epilogue.c` compiled on two ISAs with two compilers. Read each `winner` and find where the returned value comes from.
 
 {% raw %}
 <div class="tabs" role="tablist">
@@ -193,7 +193,7 @@ winner:
 </div>
 {% endraw %}
 
-The four listings fall into two camps. Clang computes the slot's address and returns it. The stack slot survives into `main`, so the read may still find the `7`. The `-O0` run printed `7` because nothing had reused the slot yet. The `-O2` run printed junk because `printf`'s own frame had already overwritten it. GCC takes the other path. It replaces the address with `0x0` before the program runs. At `-O0` it still stores `7` to the dead slot, then folds the address anyway. At `-O2` the whole body collapses to `xor %eax,%eax; ret`, and the NULL dereference is the crash in the log. Each listing is the machine's answer on that toolchain. The rule is the same on both architectures.
+The four listings fall into two camps. Clang computes the slot's address and returns it. The stack slot survives into `main`, so the read may still find the `7`. The `-O0` run printed `7` because nothing had reused the slot yet. The `-O2` run printed junk. The slot had been reused before the read; tracing whose reuse is exactly the kind of question Phase 2 teaches you to answer from disassembly. GCC takes the other path. It replaces the address with `0x0` before the program runs. At `-O0` it still stores `7` to the dead slot, then folds the address anyway. At `-O2` the whole body collapses to `xor %eax,%eax; ret`, and the NULL dereference is the crash in the log. Each listing is the machine's answer on that toolchain. The rule is the same on both architectures.
 
 ## The heap, step by step
 
@@ -295,7 +295,7 @@ leak: phantom
 
 (Same masking: `==NNNN==` is the process id.) Valgrind 3.27.1 needs no special build flags. It runs the plain `./build/leak` and watches what the program does from the side.
 
-The double-free is caught at the second `free`, exactly as the code demands. The dangling case deserves a close look. `return &local` is undefined behavior, so the compiler may do anything with it. GCC 16 folds the would-be address into `NULL`. The UndefinedBehaviorSanitizer line ("load of null pointer") and the SEGV on address 0x000000000000 record that fold. The crash is deterministic. Its cause is line 13 of `dangling.c`.
+The double-free is caught at the second `free`, exactly as the code demands. The dangling case deserves a close look. `return &local` is undefined behavior, so the compiler may do anything with it. GCC 16 folds the would-be address into `NULL`. The UndefinedBehaviorSanitizer line ("load of null pointer") and the SEGV on address 0x000000000000 record that fold. The crash is deterministic on this build. Its cause is line 13 of `dangling.c`.
 
 ## Practice
 

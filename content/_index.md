@@ -3,7 +3,7 @@ title = "C and Machines"
 description = "From first byte to complex systems. A self-paced course in C and the computer underneath it, taught from primary sources and proven against the machine."
 +++
 
-A program is a set of promises. You promise the compiler that your pointers point to live objects, that your arrays stay in bounds, that memory is returned exactly once. The machine keeps a ledger of every address, every allocation, every byte. Break a promise and the ledger shows it. Most of this book is the practice of keeping those accounts: every pointer aimed at a live object, every array in bounds, every block returned exactly once.
+A program is a set of promises. You promise the machine that your pointers point to live objects, that your arrays stay in bounds, that memory is returned exactly once. The machine keeps no record of your promises; it keeps only their consequences. Break one, and the program may crash, print garbage — or print the right answer, with the debt still on the books. This book is the practice of auditing those promises before they default: the standard as contract, the code as evidence, the machine's own log as verdict.
 
 The goal is plain. By the last phase you will write, alone, substantial programs: a shell that schedules jobs, an allocator a production service can trust, a concurrent server that survives its own load, an emulator that runs real machine code. Each is a small set of ideas, verified the plain way: run the code and read what it reports, in private, where a failure costs nothing.
 
