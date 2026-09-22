@@ -83,12 +83,12 @@ The syntax in each case is correct. The mistake in each is a misjudged lifetime.
 
 The C standard divides storage into four durations. Each row says when the object exists and when the storage stops being yours. These are the machine's terms. The code must fit them.
 
-| Duration | Object exists | Stop point |
+| Duration | Object exists | What ends it |
 |---|---|---|
-| Automatic | until the block exits | at block exit |
-| Static | whole program | at program exit |
-| Thread | thread's lifetime | at thread exit |
-| Allocated | until `free` | at `free` |
+| Automatic | until the block exits | block exit |
+| Static | whole program | program exit |
+| Thread | thread's lifetime | thread exit |
+| Allocated | until `free` | your `free` |
 
 <aside class="sidenote"><a href="http://booksite.elsevier.com/9780128017333/">Patterson and Hennessy</a> (Chapter 2, "Instructions: Language of the Computer") place each of these rows in a distinct region of virtual memory. The four rows name the stack, the data segment, the TLS block, and the heap: four regions the OS places at distinct addresses.</aside>
 
@@ -96,7 +96,7 @@ The mistake in `winner` fits one row of that table: it returned a pointer to an 
 
 ## Two correct designs
 
-The two fixes you can apply to `winner` have the same shape: make the pointer's lifetime fit the object's lifetime.
+The two fixes you can apply to `winner` have the same shape, shown in turn.
 
 The first fix extends the object's lifetime. Give the object static storage duration.
 
@@ -293,7 +293,7 @@ leak: phantom
 ==NNNN== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
 ```
 
-(Same masking: `==NNNN==` is the process id.) Valgrind 3.27.1 needs no special build flags. It runs the plain `./build/leak` and watches what the program does from the side.
+(The same masking applies.) Valgrind 3.27.1 needs no special build flags. It runs the plain `./build/leak` and watches what the program does from the side.
 
 The double-free is caught at the second `free`, exactly as the code demands. The dangling case deserves a close look. `return &local` is undefined behavior, so the compiler may do anything with it. GCC 16 folds the would-be address into `NULL`. The UndefinedBehaviorSanitizer line ("load of null pointer") and the SEGV on address 0x000000000000 record that fold. The crash is deterministic on this build. Its cause is line 13 of `dangling.c`.
 
@@ -314,7 +314,7 @@ Phase 2 lowers C to machine code. You will watch a compiler spill, save, and res
 
 Phase 3 puts that machine code on a real processor, with caches and a memory hierarchy. You will measure your own program's cache behavior and explain it.
 
-Phase 4 brings the same bookkeeping to the whole system: virtual memory, page tables, and the kernel's own ledger. A pointer's validity then depends on page residency, not just your `malloc` call. Lifetime at the small scale follows the same rule as lifetime at the large scale.
+Phase 4 brings the same bookkeeping to the whole system: virtual memory, page tables, and the kernel's record of which pages are resident. A pointer's validity then depends on page residency, not just your `malloc` call. Lifetime at the small scale follows the same rule as lifetime at the large scale.
 
 The rule, one last time: **an address is only as good as the object it points to.** Match each pointer's lifetime to its object, and the output you observe matches the standard's promises.
 

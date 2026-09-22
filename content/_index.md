@@ -9,7 +9,7 @@ The goal is plain. By the last phase you will write, alone, substantial programs
 
 Along the way you see what a machine actually is. Bits become bytes, then registers, stacks, caches, pages, processes, signals, networks. Each has budgets and failure modes, governed by a small number of laws you will meet again in every phase.
 
-This is a textbook written like an apprenticeship. Nothing rests on the author's word. Each module opens with a concrete program or a real question, plays it forward, shows the mechanism underneath, then proves the claim three ways: the specification, the runnable code, and the machine's own log. Reproduce it on your own machine, and the book becomes something you can check for yourself.
+This is a textbook written as an apprenticeship. Nothing rests on the author's word. Each module opens with a concrete program or a real question, runs it, shows the mechanism underneath, then proves the claim three ways: the specification, the runnable code, and the machine's own log. Reproduce it on your machine, and the book becomes something you can check for yourself.
 
 ## How the course is built
 
@@ -31,8 +31,8 @@ In v0.1, only Phase 1 is written; its row links to the chapter. The remaining ro
 Every module follows one shape, held to a fixed standard:
 
 1. **A concrete artifact opens it.** A real program or a real question you recognize at once.
-2. **It is played forward.** Run it as-is; see the outcome plainly. A failure here is evidence.
-3. **The mechanism underneath.** How the machine actually behaves: the registers, the storage durations, the allocator's ledger.
+2. **It runs.** Run it as-is; see the outcome as it is. A failure here is evidence.
+3. **The mechanism comes next.** How the machine actually behaves: the registers, the storage durations, the allocator's ledger.
 4. **A law lands in one sharp sentence.** The rule, stated so it can be repeated from memory.
 5. **Proof has three parts.** The specification, the runnable code, the log. All three appear; you can check all three.
 6. **Practice closes it.** The lab, its acceptance tests, and a pointer toward what comes next.
@@ -46,7 +46,7 @@ Every module follows one shape, held to a fixed standard:
 
 ## Source canon
 
-This book teaches from primary sources, not summaries of them. When a paragraph rests on a reference, you are told which one and why. Two gates admit a source. A primary source: a researcher, academic, or standards author with a primary artifact and a measurement. A public source: two or more independent university adoptions, or sustained technical praise with specifics — never influencer applause.
+This book teaches from primary sources, not summaries of them. When a paragraph rests on a reference, you are told which one and why. Two gates admit a source. Primary gate: the artifact itself (a standard, a measurement) from the person who made it. Public gate: two or more independent university adoptions, or sustained technical praise with specifics — never popularity.
 
 - Kernighan & Ritchie, [*The C Programming Language*](https://9p.io/cm/cs/cbook/), 2e
 - Bryant & O'Hallaron, [*Computer Systems: A Programmer's Perspective*](https://csapp.cs.cmu.edu/), 3e (CS:APP)
