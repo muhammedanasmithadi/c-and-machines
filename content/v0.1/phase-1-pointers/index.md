@@ -1,6 +1,9 @@
 +++
 title = "Pointers and Lifetime"
 description = "Phase 1 explains storage duration, why a returned address can be invalid, and how to prove the fix with spec, code, and log."
+
+[extra]
+ref_build = "GCC 16.2.1 · Fedora 44 x86-64"
 +++
 
 # Phase 1 — Pointers and Lifetime
@@ -36,9 +39,9 @@ int main(void) {
 }
 ```
 
-Compile it twice, then compare the result with your prediction. On the reference build (GCC 16, Fedora 44, x86-64) both binaries crash, at `-O0` and at `-O2`. The compiler has already replaced the would-be address with `NULL`. Clang 22, given the same source, keeps the literal address of the dead stack slot, and the program prints whatever the next occupant of that slot left behind. One source, two toolchains: a crash on one, a printed value on the other.
+Compile it twice, then compare the result with your prediction. On the reference build (GCC 16, Fedora 44, x86-64) both binaries crash, at both `-O0` and `-O2`. The compiler has already replaced the would-be address with `NULL`. Clang 22, given the same source, keeps the literal address of the dead stack slot, and the program prints whatever the next occupant of that slot left behind. One source, two toolchains: a crash on one, a printed value on the other.
 
-Either outcome is the compiler's legal answer, and both are worth seeing with your own run. The lesson starts at the cause. Why does a pointer to a local variable stop being good the moment the function returns?
+Either outcome is the compiler's legal answer, and both repay a run on your machine. The lesson starts at the cause. Why does a pointer to a local variable stop being good the moment the function returns?
 
 <aside class="sidenote">The standard makes no promise about this program. That is what undefined behavior means: each compiler may do anything at all, including replacing the address with `NULL`. The dangling case in this lesson shows exactly that.</aside>
 
@@ -50,20 +53,20 @@ You can see why someone would expect `7`. Nothing overwrote that stack slot betw
 
 `local` has **automatic storage duration**. Section 6.2.4 of the C standard sets its lifetime: the object exists from entry into the block until exit from the block. When `winner` returns, the block exits and the lifetime ends. The pointer still holds the old address, but no object lives there anymore.
 
-That pointer is **dangling**. It names an address whose object no longer lives there. The address is unchanged, but the standard guarantees nothing behind it now.
+That pointer is **dangling**. It points where its object used to live. The address is unchanged, but the standard guarantees nothing behind it now.
 
 This is a property of the language, and two sentences from **6.2.4p2** state it:
 
 - "If an object is referred to outside of its lifetime, the behavior is undefined."
 - "The value of a pointer becomes indeterminate when the object it points to (or just past) reaches the end of its lifetime."
 
-The standard chooses its word carefully: the value becomes *indeterminate*. On the stack, the slot now belongs to whichever function runs next. After a `free`, the block belongs to the allocator again. Either way, reading through that pointer reads bytes with no owner.
+The standard chooses its word carefully: the value becomes *indeterminate*. On the stack, the slot now belongs to whichever function runs next. After a `free`, the block belongs to the allocator again. Either way, that pointer reads bytes no one owns.
 
 ## The three ways lifetime goes wrong
 
 Every lifetime bug is one of three failures of bookkeeping:
 
-1. **Use after free.** You read or write through a pointer after the object's lifetime ended. The opening program does this: `winner` returns `&local`, and `w->points` reads past the block's exit.
+1. **Use after free.** You read or write through a pointer after the object's lifetime has ended. The opening program does this: `winner` returns `&local`, and `w->points` reads past the block's exit.
 2. **Double free.** Two paths release the same block. The allocator's record for the block breaks, and the next `malloc` returns a block that two owners believe is theirs.
 3. **Leak.** Memory you no longer need, never returned. Small in a test, unbounded in a server. The process grows until it exhausts its address space or the kernel terminates it.
 
@@ -75,7 +78,7 @@ All three share a root cause: a mismatch between when you believe an object exis
 | Double free | It is safe to `free` twice | Each block is returned once; the second `free` is a stranger's call, even from the same hand |
 | Leak | I will `free` it later | The allocator reclaims blocks only when told |
 
-The three bugs cost differently. A leak costs memory and time: process RSS climbs as the allocator hands out new pages, and latency follows. A double free costs correctness first: the next `malloc` can hand one block to two owners, and each writes over the other. Use after free is the hardest to chase. The program prints the right answer on your laptop under one compiler, and the wrong answer on another machine from the same source.
+The three bugs charge different prices. A leak costs memory and time: resident memory (RSS) climbs as the allocator hands out new pages, and latency follows. A double free costs correctness first: the next `malloc` can hand one block to two owners, and each writes over the other. Use after free is the hardest to chase. The program prints the right answer on your laptop under one compiler, and the wrong answer on another machine from the same source.
 
 The syntax in each case is correct. The mistake in each is a misjudged lifetime.
 
@@ -92,7 +95,7 @@ The C standard divides storage into four durations. Each row says when the objec
 
 <aside class="sidenote"><a href="http://booksite.elsevier.com/9780128017333/">Patterson and Hennessy</a> (Chapter 2, "Instructions: Language of the Computer") place each of these rows in a distinct region of virtual memory. The four rows name the stack, the data segment, the TLS block, and the heap: four regions the OS places at distinct addresses.</aside>
 
-The mistake in `winner` fits one row of that table: it returned a pointer to an Automatic object, and the caller used it after the block exited.
+The mistake in `winner` fits one row of that table: it returned a pointer to an automatic object, and the caller used it after the block exited.
 
 ## Two correct designs
 
@@ -136,8 +139,8 @@ Compile both variants. Call each one twice in a row and print both results. The 
 
 Three facts about the ledger explain the three bugs:
 
-- `free(p)` removes your block from the ledger. From that moment, the block belongs to the allocator, not to you. Using `p` after `free` reads a block whose record no longer shows you.
-- Calling `free(p)` twice happens when two parts of a program both believe they own the same block. The ledger is not designed for two owners.
+- `free(p)` removes your block from the ledger. From that moment, the block belongs to the allocator, not to you. Using `p` after `free` reads a block whose entry no longer has your name.
+- A double free happens when two parts of a program each believe they own the block. The ledger is not designed for two owners.
 - The allocator reclaims blocks only when told. A block you never free stays in the ledger, marked occupied, even if nothing references it.
 
 The proof below runs the four programs against the tools and shows what the ledger records for each.
@@ -232,7 +235,7 @@ Watch what the sum does across all seven steps: it stays 48 bytes the whole time
   </div>
   <div class="proof-block">
     <p class="proof-label">2 · The specification</p>
-    <p>The C standard, quoted above, is the contract. `dangling.c` reads through `&x` after the block exits (line 13), `doublefree.c` returns one block twice (lines 11–12), `leak.c` never returns its 40 bytes. The tools then tell you exactly how.</p>
+    <p>The C standard, quoted above, is the contract. `dangling.c` reads through `&x` after the block exits (line 13), `doublefree.c` returns one block twice (lines 11–12), `leak.c` never returns its 40 bytes. The tools then show the proof.</p>
   </div>
   <div class="proof-block">
     <p class="proof-label">3 · The log</p>
@@ -293,9 +296,9 @@ leak: phantom
 ==NNNN== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
 ```
 
-(The same masking applies.) Valgrind 3.27.1 needs no special build flags. It runs the plain `./build/leak` and watches what the program does from the side.
+(The same masking applies.) Valgrind 3.27.1 needs no special build flags. It runs the plain `./build/leak` and watches what the program does from the outside.
 
-The double-free is caught at the second `free`, exactly as the code demands. The dangling case deserves a close look. `return &local` is undefined behavior, so the compiler may do anything with it. GCC 16 folds the would-be address into `NULL`. The UndefinedBehaviorSanitizer line ("load of null pointer") and the SEGV on address 0x000000000000 record that fold. The crash is deterministic on this build. Its cause is line 13 of `dangling.c`.
+The double-free is caught at the second `free`, exactly where the source breaks the rule. The dangling case deserves a close look. `return &local` is undefined behavior, so the compiler may do anything with it. GCC 16 folds the would-be address into `NULL`. The UndefinedBehaviorSanitizer line ("load of null pointer") and the SEGV on address 0x000000000000 record that fold. The crash is deterministic on this build. Its cause is line 13 of `dangling.c`.
 
 ## Practice
 
@@ -306,13 +309,13 @@ The double-free is caught at the second `free`, exactly as the code demands. The
 3. Cross-build the same sources for AArch64 and run them under QEMU. Follow `labs/malloc/notes/arm.md`. The lesson must hold on the other ISA too.
 4. Fix the three broken files so all three pass under ASan and Valgrind. For `dangling.c` the fix is the static-duration design; for `doublefree.c`, a `free` per `malloc`, one owner; for `leak.c`, the missing `free`.
 
-Read in this order: K&R **Ch 5–6** ([pointers, structures](https://9p.io/cm/cs/cbook/)), K&R Appendix A ([storage classes](https://9p.io/cm/cs/cbook/)), CS:APP **§9.9** ([dynamic allocation](https://csapp.cs.cmu.edu/)), Wilson et al.'s [*Dynamic Storage Allocation: A Survey and Critical Review*](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf), and Drepper's [*What Every Programmer Should Know About Memory*](https://lwn.net/Articles/250967/), parts [1](https://lwn.net/Articles/250967/)–[2](https://lwn.net/Articles/252852/) (why the cost is in caches, not just correctness).
+Read in this order: K&R **Ch 5–6** ([where pointers and structures earn their keep](https://9p.io/cm/cs/cbook/)), K&R Appendix A ([where storage classes are defined](https://9p.io/cm/cs/cbook/)), CS:APP **§9.9** ([where allocators are built](https://csapp.cs.cmu.edu/)), Wilson et al.'s [*Dynamic Storage Allocation: A Survey and Critical Review*](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf) ([where the designs are compared](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf)), and Drepper's [*What Every Programmer Should Know About Memory*](https://lwn.net/Articles/250967/), parts [1](https://lwn.net/Articles/250967/)–[2](https://lwn.net/Articles/252852/) (why the cost is in caches, not just correctness).
 
 ## What's next
 
 Phase 2 lowers C to machine code. You will watch a compiler spill, save, and restore registers, respecting lifetime at each step and never using what it has released. The stack frame from this chapter becomes the centerpiece, examined in depth.
 
-Phase 3 puts that machine code on a real processor, with caches and a memory hierarchy. You will measure your own program's cache behavior and explain it.
+Phase 3 puts that machine code on a real processor, with caches and a memory hierarchy. You will measure your program's cache behavior and explain it.
 
 Phase 4 brings the same bookkeeping to the whole system: virtual memory, page tables, and the kernel's record of which pages are resident. A pointer's validity then depends on page residency, not just your `malloc` call. Lifetime at the small scale follows the same rule as lifetime at the large scale.
 
@@ -320,4 +323,4 @@ The rule, one last time: **an address is only as good as the object it points to
 
 ---
 
-*Sources: C11 6.2.4, 7.22.3; [K&R 2e](https://9p.io/cm/cs/cbook/) Ch 5–6, App A; [CS:APP 3e](https://csapp.cs.cmu.edu/) §9.9; [Wilson et al. (1995)](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf); [Drepper (2007)](https://lwn.net/Articles/250967/). Prose follows the classic style with a teaching voice: concrete first, mechanism before law; the machine judges.*
+*Sources: C11 6.2.4, 7.22.3; [K&R 2e](https://9p.io/cm/cs/cbook/) Ch 5–6, App A; [CS:APP 3e](https://csapp.cs.cmu.edu/) §9.9; [Wilson et al. (1995)](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf); [Drepper (2007)](https://lwn.net/Articles/250967/). Prose follows the classic style with a teaching voice (Thomas & Turner, *Clear and Simple as the Truth*): concrete first, mechanism before law; the machine judges.*
