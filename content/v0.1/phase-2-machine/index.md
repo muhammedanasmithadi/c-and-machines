@@ -145,7 +145,7 @@ The first line is the gate's verdict on x86-64. The second is QEMU's stdout from
 4. Open both `add.s` files and find where each function spills its arguments. Count the stores. Both spill twice at `-O0`; consider what `-O2` might skip, then compile with `-O2` and read the answer.
 5. Write `mul` beside `add`: same shape, `return a * b`, printed from `main`. Predict its two listing lines (the sum lines with the operator swapped), then verify against both outputs.
 
-Read in this order: the System V AMD64 ABI ([where the x86-64 register contract is written](https://gitlab.com/x86-psABIs/x86-64-ABI)), AAPCS64 ([where ARM's register contract is written](https://github.com/ARM-software/abi-aa)), and the Intel SDM ([where each x86 byte is defined](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)).
+Read in this order: the System V AMD64 ABI ([the x86-64 psABI project](https://gitlab.com/x86-psABIs/x86-64-ABI)) for the register contract; AAPCS64 ([the Arm ABI documents](https://github.com/ARM-software/abi-aa)) for ARM's; and the Intel SDM ([the x86 manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)) for the byte definitions.
 
 ## What's next
 

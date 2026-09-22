@@ -145,7 +145,7 @@ Two binaries verified, four stage assertions passed with no output because each 
 4. Predict `sizeof` for `short`, then add it to `sizes.c` and run. If your prediction was wrong, find whether the standard or the ABI decides the real width.
 5. Count the bytes at each stage with `wc -c` and compare against the table above. Same toolchain, same flags, same directory: same numbers. Debug info records the build path, so a different directory means different bytes.
 
-Read in this order: K&R **Ch 2** ([where the types earn their names](https://9p.io/cm/cs/cbook/)), C11 **§5.1.1.2** ([where translation is defined](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf)), and `man 5 elf` ([where the signature is documented](https://man7.org/linux/man-pages/man5/elf.5.html)).
+Read in this order: K&R 2e ([the C book](https://9p.io/cm/cs/cbook/)), **Ch 2** for types; C11 **§5.1.1.2** ([where translation is defined](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf)); and `man 5 elf` ([where the signature is documented](https://man7.org/linux/man-pages/man5/elf.5.html)).
 
 ## What's next
 
