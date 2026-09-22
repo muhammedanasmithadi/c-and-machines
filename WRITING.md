@@ -105,6 +105,20 @@ output when you can show it.
 - Present tense throughout. The book describes how things work now, on the
   machine the reader has.
 
+## Metaphors and terminology
+
+- **Metaphors must be earned.** Introduce a metaphor by its mechanism once
+  (the ledger is a literal record of blocks before it is anything else), then
+  it may recur freely. One metaphor system per paragraph; money and law are
+  the house systems, the rest are tourists.
+- **Tricolons are currency.** Spend one per page. A second tricolon must
+  advance, never echo.
+- **Terminology under oath.** Functions are not operators; frames exist only
+  while their function runs; "deterministic" names a build, not a language.
+  Vocabulary errors break the contract faster than anything else.
+- **Every page must run on a stranger's machine.** Relative links, pinned
+  versions, dateline intact. Verify through the public URL, never localhost.
+
 ## What a module must contain
 
 Every module (chapter, section, lab section) follows the six-step shape stated
@@ -155,3 +169,6 @@ is irrelevant or the chapter's structure has failed.
 - [ ] At most one em-dash per paragraph (preflight enforces).
 - [ ] One sharp rule sentence per section.
 - [ ] The reader has a job in every section: predict, run, read, fix.
+- [ ] Metaphors earned by mechanism; one system per paragraph.
+- [ ] No second tricolon that echoes the first.
+- [ ] Versions pinned; links relative (build output grep-clean).
