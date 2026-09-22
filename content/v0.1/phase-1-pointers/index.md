@@ -4,6 +4,7 @@ description = "Phase 1 explains storage duration, why a returned address can be 
 
 [extra]
 ref_build = "GCC 16.2.1 · Fedora 44 x86-64"
+entry = "01"
 +++
 
 # Phase 1 — Pointers and Lifetime
@@ -60,13 +61,13 @@ This is a property of the language, and two sentences from **6.2.4p2** state it:
 - "If an object is referred to outside of its lifetime, the behavior is undefined."
 - "The value of a pointer becomes indeterminate when the object it points to (or just past) reaches the end of its lifetime."
 
-The standard chooses its word carefully: the value becomes *indeterminate*. On the stack, the slot now belongs to whichever function runs next. After a `free`, the block belongs to the allocator again. Either way, that pointer reads bytes no one owns.
+The standard chooses its word carefully: the value becomes *indeterminate*. On the stack, the slot now belongs to whichever function runs next. After a `free`, the block belongs to the allocator again. Either way, that pointer reads bytes no one owns. Open the program above and mark the line after which `local` is gone.
 
 ## The three ways lifetime goes wrong
 
 Every lifetime bug is one of three failures of bookkeeping:
 
-1. **Use after free.** You read or write through a pointer after the object's lifetime has ended. The opening program does this: `winner` returns `&local`, and `w->points` reads past the block's exit.
+1. **Use after free.** You read or write through a pointer after the object's lifetime has ended. The opening program does this: `winner` returns `&local`, and `w->points` reads past the block's exit. Match each of the three to its row in the table below.
 2. **Double free.** Two paths release the same block. The allocator's record for the block breaks, and the next `malloc` returns a block that two owners believe is theirs.
 3. **Leak.** Memory you no longer need, never returned. Small in a test, unbounded in a server. The process grows until it exhausts its address space or the kernel terminates it.
 
@@ -95,7 +96,7 @@ The C standard divides storage into four durations. Each row says when the objec
 
 <aside class="sidenote"><a href="http://booksite.elsevier.com/9780128017333/">Patterson and Hennessy</a> (Chapter 2, "Instructions: Language of the Computer") place each of these rows in a distinct region of virtual memory. The four rows name the stack, the data segment, the TLS block, and the heap: four regions the OS places at distinct addresses.</aside>
 
-The mistake in `winner` fits one row of that table: it returned a pointer to an automatic object, and the caller used it after the block exited.
+The mistake in `winner` fits one row of that table: it returned a pointer to an automatic object, and the caller used it after the block exited. Point to that row before reading on.
 
 ## Two correct designs
 
@@ -141,7 +142,7 @@ Three facts about the ledger explain the three bugs:
 
 - `free(p)` removes your block from the ledger. From that moment, the block belongs to the allocator, not to you. Using `p` after `free` reads a block whose entry no longer has your name.
 - A double free happens when two parts of a program each believe they own the block. The ledger is not designed for two owners.
-- The allocator reclaims blocks only when told. A block you never free stays in the ledger, marked occupied, even if nothing references it.
+- The allocator reclaims blocks only when told. A block you never free stays in the ledger, marked occupied, even if nothing references it. Read the three facts as three ledger rules, then walk them in the stepper below.
 
 The proof below runs the four programs against the tools and shows what the ledger records for each.
 
@@ -313,7 +314,7 @@ Read in this order: K&R 2e ([the C book](https://9p.io/cm/cs/cbook/)), **Ch 5–
 
 ## What's next
 
-Phase 2 lowers C to machine code. You will watch a compiler spill, save, and restore registers, respecting lifetime at each step and never using what it has released. The stack frame from this chapter becomes the centerpiece, examined in depth.
+Phase 2 lowers C to machine code. You will watch a compiler spill, save, and restore registers, respecting lifetime at each step and never using what it has released. The stack frame from this chapter becomes the centerpiece, examined in depth. Carry one question in: which register holds the answer?
 
 Phase 3 puts that machine code on a real processor, with caches and a memory hierarchy. You will measure your program's cache behavior and explain it.
 

@@ -4,6 +4,7 @@ description = "Phase 2 reads one C function in two dialects, x86-64 and AArch64,
 
 [extra]
 ref_build = "GCC 16.2.1 · Fedora 44 x86-64 · QEMU 10.2.2 AArch64"
+entry = "02"
 +++
 
 <div class="epigraph">
@@ -124,7 +125,7 @@ Find the `add` bytes in each listing once more. A C program is text you write, a
   </div>
   <div class="proof-block">
     <p class="proof-label">3 · The log</p>
-    <p>This is the machine's answer, on both machines. The lab gate checks the native binary, the emulated run, and both listings:</p>
+    <p>This is the machine's answer, on both machines. The lab gate checks the native binary, the emulated run, and both listings. Run <code>make -C labs/asm check</code> and match each line of output to its block.</p>
   </div>
 </div>
 
@@ -145,7 +146,7 @@ The first line is the gate's verdict on x86-64. The second is QEMU's stdout from
 4. Open both `add.s` files and find where each function spills its arguments. Count the stores. Both spill twice at `-O0`; consider what `-O2` might skip, then compile with `-O2` and read the answer.
 5. Write `mul` beside `add`: same shape, `return a * b`, printed from `main`. Predict its two listing lines (the sum lines with the operator swapped), then verify against both outputs.
 
-Read in this order: the System V AMD64 ABI ([the x86-64 psABI project](https://gitlab.com/x86-psABIs/x86-64-ABI)) for the register contract; AAPCS64 ([the Arm ABI documents](https://github.com/ARM-software/abi-aa)) for ARM's; and the Intel SDM ([the x86 manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)) for the byte definitions.
+Read in this order: the System V AMD64 ABI ([the x86-64 psABI project](https://gitlab.com/x86-psABIs/x86-64-ABI)) for the register contract; AAPCS64 ([the procedure-call standard itself](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst)) for ARM's; and the Intel SDM ([the x86 manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)) for the byte definitions.
 
 ## What's next
 
@@ -155,4 +156,4 @@ The rule, one last time: **a C program means whatever its instructions do.** Lea
 
 ---
 
-*Sources: System V AMD64 ABI; [AAPCS64](https://github.com/ARM-software/abi-aa); [Intel SDM](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html). Prose follows the classic style with a teaching voice (Thomas & Turner, *Clear and Simple as the Truth*): concrete first, mechanism before law; the machine judges.*
+*Sources: [System V AMD64 ABI](https://gitlab.com/x86-psABIs/x86-64-ABI); [AAPCS64](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst); [Intel SDM](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html). Prose follows the classic style with a teaching voice (Thomas & Turner, *Clear and Simple as the Truth*): concrete first, mechanism before law; the machine judges.*

@@ -7,5 +7,5 @@ description = "A self-paced course from first byte to complex systems, in C and 
 [extra]
 author = "Anas"
 version = "0.1.0"
-version_label = "v0.1 — Pointers and Lifetime"
+version_label = "v0.1 — Pointers, Memory, and the Machine"
 show_version_badge = true

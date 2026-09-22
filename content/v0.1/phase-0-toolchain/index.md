@@ -4,6 +4,7 @@ description = "Phase 0 follows one C program through four stages into bytes, and
 
 [extra]
 ref_build = "GCC 16.2.1 · Fedora 44 x86-64"
+entry = "00"
 +++
 
 <div class="epigraph">
