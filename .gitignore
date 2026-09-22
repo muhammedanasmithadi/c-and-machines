@@ -1,6 +1,8 @@
 public/
 labs/malloc/build/
 labs/malloc/build-asan/
+labs/malloc/build-aarch64/
 labs/toolchain/build/
 labs/asm/build/
 labs/asm/build-aarch64/
+*.core

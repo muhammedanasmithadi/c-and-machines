@@ -10,7 +10,7 @@ You read it as a static site and prove every claim on your own machine.
 
 ## Prove
 
-- Lab gate for Phase 1: `make check` (ASan verdicts: leak, double-free, and dangling detected; fixed PASSED).
+- Lab gate for Phase 1: `make check` (ASan binaries fail as documented; fixed prints `fixed: 42`).
 - Prose gate: `make preflight` (banned-word check from WRITING.md).
 - Full site build: `make build`.
 
@@ -21,8 +21,8 @@ You read it as a static site and prove every claim on your own machine.
 
 ## Versions
 
-- Editions live under `content/v0.x/`, each recorded with a `jj` bookmark. The header badge shows the edition you hold.
-- `base_url` in `config.toml` stays `https://localhost/` for local builds. Set a real host (sitemap, robots, absolute links) before you publish.
+- Editions live under `content/v0.x/`, each recorded with a `jj` bookmark. Every module's dateline names the edition and the reference build it was checked against.
+- `base_url` in `config.toml` is `/`, so builds emit root-relative links. Set a real host (sitemap, robots, absolute links) before you publish.
 
 ## Sources
 

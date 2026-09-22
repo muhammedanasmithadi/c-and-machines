@@ -14,7 +14,7 @@ entry = "01"
 <p class="attribution">— the rule, stated in advance, proved below</p>
 </div>
 
-Here is a short C program, in a file named `epilogue.c` for the function epilogue where the lifetime of `local` ends. Predict what it prints, then run it.
+Here is a short C program. Its file is named `epilogue.c` for the function epilogue (the `popq`/`retq` teardown, not a function by that name) where the lifetime of `local` ends. Predict what it prints, then run it.
 
 <div class="code-label">epilogue.c</div>
 
@@ -245,15 +245,13 @@ Watch what the sum does across all seven steps: it stays 48 bytes the whole time
 </div>
 
 ```txt
-$ make -C labs/malloc check
-== leak (expect failure) ==
+$ ./build-asan/leak
 ==NNNN==ERROR: LeakSanitizer: detected memory leaks
 Direct leak of 40 byte(s) in 1 object(s) allocated from:
     #1 0x0000004004e7 in main tests/leak.c:7
 SUMMARY: AddressSanitizer: 40 byte(s) leaked in 1 allocation(s).
-leak detected
 
-== doublefree (expect failure) ==
+$ ./build-asan/doublefree
 ==NNNN==ERROR: AddressSanitizer: attempting double-free on 0x7ac...010 in thread T0:
     #1 0x0000004005c2 in main tests/doublefree.c:12
 0x7ac...010 is located 0 bytes inside of 4-byte region [0x7ac...010,0x7ac...014)
@@ -263,9 +261,8 @@ previously allocated by thread T0 here:
     #1 0x0000004004f7 in main tests/doublefree.c:7
 SUMMARY: AddressSanitizer: double-free tests/doublefree.c:12 in main
 ==NNNN==ABORTING
-double-free detected
 
-== dangling (expect failure) ==
+$ ./build-asan/dangling
 tests/dangling.c:13:3: runtime error: load of null pointer of type 'int'
 ==NNNN==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x000000400636 ...)
 ==NNNN==The signal is caused by a READ memory access.
@@ -273,14 +270,18 @@ tests/dangling.c:13:3: runtime error: load of null pointer of type 'int'
     #0 0x000000400636 in main tests/dangling.c:13
 SUMMARY: AddressSanitizer: SEGV tests/dangling.c:13 in main
 ==NNNN==ABORTING
-dangling detected
 
-== fixed (expect PASS) ==
+$ ./build-asan/fixed
 fixed: 42
-fixed PASSED
+
+$ make -C labs/malloc check
+VERIFIED ./build-asan/leak
+VERIFIED ./build-asan/doublefree
+VERIFIED ./build-asan/dangling
+VERIFIED ./build-asan/fixed
 ```
 
-Every line here is the machine's own. The `==NNNN==` masks the process id, which changes each run; the heap address `0x7ac...` changes with the allocator's state. Everything else is as the tools wrote it. The Makefile in the lab filters each trace to its verdict lines. Run it yourself for the full stack, the register dump, and the exact heap addresses, unshortened. Reference: GCC 16.2.1 with `-fsanitize=address,undefined`, Fedora 44, x86-64, 2026-09-16.
+Every line here is the machine's own. The `==NNNN==` masks the process id, which changes each run; the heap address `0x7ac...` changes with the allocator's state. Everything else is as the tools wrote it. The gate runs each binary and prints one VERIFIED line per program, shown last. Run each binary by hand for the full stack, the register dump, and the exact heap addresses, unshortened. Reference: GCC 16.2.1 with `-fsanitize=address,undefined`, Fedora 44, x86-64, 2026-09-16.
 
 Each verdict needs its own reading. The leak exits 0, and an exit code of zero is not a pass. Only a tool that checks the ledger at exit sees the 40 bytes. `valgrind --leak-check=full` shows it plainly:
 

@@ -8,14 +8,15 @@ QEMU     = qemu-aarch64
 QSYSROOT ?= /usr/aarch64-redhat-linux/sys-root/fc44
 AFLAGS   = $(CFLAGS) --sysroot=$(QSYSROOT)
 # Fedora's cross driver asks the linker for -latomic_asneeded, a stub the
-# distro does not ship for aarch64. lib/libatomic_asneeded.a is an empty
-# archive (verify: `ar t` lists no members), so it satisfies the flag while
-# contributing nothing to the binary.
+# distro does not ship for aarch64. labs/shared/lib/libatomic_asneeded.a is
+# an empty archive (verify: `ar t` lists no members), so it satisfies the
+# flag while contributing nothing to the binary. Shared with labs/malloc,
+# whose notes use the same cross link.
 # The populated sysroot keeps its loader at /usr/lib, while the driver's
 # default interpreter is /lib: name it explicitly so QEMU's -L mapping
 # resolves. Both paths name the same file on a real Fedora install
 # (/lib is a symlink to usr/lib there).
-ALDFLAGS = -L$(CURDIR)/lib -Wl,--dynamic-linker=/usr/lib/ld-linux-aarch64.so.1
+ALDFLAGS = -L$(CURDIR)/../shared/lib -Wl,--dynamic-linker=/usr/lib/ld-linux-aarch64.so.1
 
 BUILDDIR  = build
 ABUILDDIR = build-aarch64
