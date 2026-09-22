@@ -58,7 +58,7 @@ Same source, same output, two machines. The second run emulates an AArch64 proce
   400479:	c3                   	ret
 ```
 
-Cover the listing and predict: which register carries `a` into the `add`? Read on to check. The caller placed the arguments where the System V contract says: first in `%edi`, second in `%esi`. The function spills both to its frame, reloads them into `%edx` and `%eax`, and `addl`, bytes `01 d0`, writes the sum over `%eax`. Whatever sits in `%eax` at `ret` is the return value. So `a` travels `%edi`, to the stack, to `%edx`, and the answer leaves in `%eax`.
+Cover the listing and predict: which register carries `a` into the `add`? Read on to check. The caller placed the arguments where the System V contract says: first in `%edi`, second in `%esi`. The function spills both to its frame, reloads them into `%edx` and `%eax`, and `add`, bytes `01 d0`, writes the sum over `%eax`. Whatever sits in `%eax` at `ret` is the return value. So `a` travels `%edi`, to the stack, to `%edx`, and the answer leaves in `%eax`.
 
 ## The AArch64 dialect
 
@@ -91,7 +91,7 @@ Pick any row and find it in both listings above:
 | Second argument arrives in | `%esi` | `w1` |
 | Spill to the frame | `mov` to `(%rbp)` | `str` to `[sp]` |
 | Reload for the sum | `mov` to `%edx`, `%eax` | `ldr` to `w1`, `w0` |
-| The sum itself | `addl %edx,%eax` | `add w0, w1, w0` |
+| The sum itself | `add %edx,%eax` | `add w0, w1, w0` |
 | Answer leaves in | `%eax` | `w0` |
 | Return to caller | `ret` | `ret` |
 
@@ -105,7 +105,7 @@ This is the frame Phase 1 saw torn down. `winner` returned an address into exact
 
 ## Bytes are instructions
 
-The left column of each listing is not commentary. `01 d0` IS the addition on x86-64: two bytes the processor fetches, decodes, and executes. `0b000020` IS the addition on AArch64: four bytes, every ARM instruction exactly four wide. Assemblers turn text into these bytes; disassemblers turn them back. Neither direction loses information here, which is why `objdump` can show both side by side with nothing hidden.
+The left column of each listing is the program itself: `01 d0` is the addition on x86-64, two bytes the processor fetches, decodes, and executes. `0b000020` is the addition on AArch64: four bytes, and every AArch64 instruction is exactly four wide. Assemblers turn text into these bytes; disassemblers turn them back. Neither direction loses information here, which is why `objdump` can show both side by side with nothing hidden.
 
 Find the `add` bytes in each listing once more. A C program is text you write, and it is also bytes the machine reads. Both descriptions are complete. When they disagree about what happens next, the bytes win, because the bytes are what runs.
 
@@ -116,7 +116,7 @@ Find the `add` bytes in each listing once more. A C program is text you write, a
 <div class="proof">
   <div class="proof-block">
     <p class="proof-label">1 · The code</p>
-    <p>The lab for this lesson, <code>labs/asm/</code>, builds the same program for both instruction sets, captures both listings, and runs each binary: native on x86-64, emulated on AArch64. The cross leg carries its sysroot, its loader path, and one documented empty archive that satisfies the driver's stub flag.</p>
+    <p>The lab for this lesson, <code>labs/asm/</code>, builds the same program for both instruction sets, keeps both assembly listings, and runs each binary: native on x86-64, emulated on AArch64. The cross leg carries its sysroot, its loader path, and one documented empty archive that satisfies the driver's stub flag.</p>
   </div>
   <div class="proof-block">
     <p class="proof-label">2 · The specification</p>
@@ -137,11 +137,11 @@ The first line is the gate's verdict on x86-64. The second is QEMU's stdout from
 
 ## Practice
 
-`labs/asm/` contains `add.c` and the two-target Makefile. Your work:
+`labs/asm/` holds `tests/add.c` and the stage Makefile. Your work:
 
 1. Run `make -C labs/asm check` and confirm every line verifies, including the emulated run.
 2. Change `+` to `-`, predict the new output, and name the instruction line that must change in each listing before you rebuild. Then rebuild and check both predictions.
-3. Run the AArch64 binary without QEMU: `./build-aarch64/add`. The kernel reports `cannot execute binary file: Exec format error`, status 126. That message marks instruction sets as real boundaries.
+3. Run the AArch64 binary without QEMU: `./build-aarch64/add`. Running it prints `cannot execute binary file: Exec format error` and exits 126: the kernel loads only its own machine's format, so the message marks instruction sets as real boundaries.
 4. Open both `add.s` files and find where each function spills its arguments. Count the stores. Both spill twice at `-O0`; consider what `-O2` might skip, then compile with `-O2` and read the answer.
 5. Write `mul` beside `add`: same shape, `return a * b`, printed from `main`. Predict its two listing lines (the sum lines with the operator swapped), then verify against both outputs.
 

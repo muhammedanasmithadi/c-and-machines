@@ -15,11 +15,7 @@ AFLAGS   = $(CFLAGS) --sysroot=$(QSYSROOT)
 # default interpreter is /lib: name it explicitly so QEMU's -L mapping
 # resolves. Both paths name the same file on a real Fedora install
 # (/lib is a symlink to usr/lib there).
-# The populated sysroot keeps its loader at /usr/lib, while the driver's
-# default interpreter is /lib: name it explicitly so QEMU's -L mapping
-# resolves. Both paths name the same file on a real Fedora install
-# (/lib is a symlink to usr/lib there).
-ALDFLAGS = -L$(CURDIR)/lib -Wl,--dynamic-linker=/usr/lib/ld-linux-aarch64.so.1 -Wl,--dynamic-linker=/usr/lib/ld-linux-aarch64.so.1
+ALDFLAGS = -L$(CURDIR)/lib -Wl,--dynamic-linker=/usr/lib/ld-linux-aarch64.so.1
 
 BUILDDIR  = build
 ABUILDDIR = build-aarch64

@@ -1,9 +1,9 @@
 +++
 title = "v0.1 — Pointers, Memory, and the Machine"
-description = "The first edition: two phases, the toolchain and then pointers and lifetime, every claim checked against real runs."
+description = "The first edition: three phases, from the toolchain through pointers to machine language, every claim checked against real runs."
 +++
 
-v0.1 holds two finished phases. Later editions fill the rest of the map.
+v0.1 holds three finished phases. Later editions fill the rest of the map.
 
 - [Phase 0 — Bits and the Toolchain](phase-0-toolchain/): the stages, the bytes, the shell's score.
 
