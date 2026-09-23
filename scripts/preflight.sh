@@ -127,14 +127,20 @@ if [ "$?" -ne 0 ]; then
 fi
 
 # First-40-lines gate: no later-phase machinery, no canon, no scavenger hunt
-# before the model exists. Code blocks and inline code stripped first.
+# before the model exists. Counts raw body lines (after frontmatter), so any
+# author can verify by line number. Inline code is kept: naming popq in
+# backticks on line 10 is still naming it on line 10.
+# Note: QEMU is deliberately absent from this list. Phase 2A runs QEMU as its
+# concrete second run, so a global ban would forbid the artifact itself. The
+# per-module frontmatter (docs/module-template.md) still declares QEMU
+# forbidden for 1A/1B, enforced in review.
 module_hits=$(python3 - <<'EOF'
 import re, subprocess
 files = subprocess.run(
     ['find', 'content/v0.1', '-name', 'index.md'],
     capture_output=True, text=True).stdout.split()
 forbidden = ['popq', 'retq', 'pop %rbp', 'bti c', 'BTI',
-             'AddressSanitizer', 'Valgrind', 'qemu-aarch64', 'QEMU',
+             'AddressSanitizer', 'Valgrind',
              'two-gate', 'two gate', 'primary gate',
              'find the reading', 'in the list above',
              'match each step to its section',
@@ -147,12 +153,7 @@ for f in files:
     t = open(f).read()
     # frontmatter ends at the second +++
     body = t.split('+++', 2)[-1] if t.startswith('+++') else t
-    body = re.sub(r'```.*?```', '', body, flags=re.S)
-    body = re.sub(r'{% raw %}.*?{% endraw %}', '', body, flags=re.S)
-    body = body.replace('`', ' ')
-    lines = [l for l in body.splitlines()
-             if l.strip() and not l.strip().startswith('<')]
-    first40 = '\n'.join(lines[:40])
+    first40 = '\n'.join(body.splitlines()[:40])
     low = first40.lower()
     for term in forbidden:
         if term.lower() in low:

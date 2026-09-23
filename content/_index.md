@@ -12,7 +12,7 @@ Eight phases carry you from the first byte to working systems. Each phase ends w
 | Phase | Territory | Exit artifact |
 |---|---|---|
 | [0](@/v0.1/phase-0-toolchain/index.md) | Bits, numbers, the C toolchain, the shell | Build a C program by hand, stage by stage |
-| [1](@/v0.1/phase-1-pointers/index.md) | C mastery: pointers, memory, build systems | Clean, leak-free C under ASan + Valgrind |
+| [1](@/v0.1/phase-1-pointers/_index.md) | C mastery: pointers, memory, build systems | Clean, leak-free C under ASan + Valgrind |
 | [2](@/v0.1/phase-2-machine/index.md) | Machine language, x86-64 and AArch64 | Read small disassemblies; translate C to both ISAs |
 | 3 | Processor, optimizing, memory hierarchy | Measure and explain your program's cache behavior |
 | 4 | Linking, virtual memory, allocators | A `malloc` package that passes stress |

@@ -138,7 +138,7 @@ Read after you finish the lab, not before: K&R 2e ([the C book](https://9p.io/cm
 
 ## What's next
 
-Phase 1 takes up a second program, `winner.c`: [Pointers and Lifetime](@/v0.1/phase-1-pointers/index.md). The stages above produce bytes; the next chapter asks how long each byte stays yours. Carry that question across: it is the whole of the next proof. The toolchain you met here is the instrument every later proof uses.
+Phase 1 takes up a second program, `winner.c`: [Pointers and Lifetime](@/v0.1/phase-1-pointers/_index.md). The stages above produce bytes; the next chapter asks how long each byte stays yours. Carry that question across: it is the whole of the next proof. The toolchain you met here is the instrument every later proof uses.
 
 The rule, one last time: **every byte in the built program was put there by the toolchain.** Learn the tools in order, and any program opens the same way: stage by stage, file by file.
 
