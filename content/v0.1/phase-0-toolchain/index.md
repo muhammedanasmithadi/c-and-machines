@@ -78,26 +78,6 @@ Relocatable means not yet placed: this object knows its own bytes but not yet wh
 
 Linking combines the object with the C library and fixes addresses. The result is executable and dynamically linked, with its interpreter named inside: `/lib64/ld-linux-x86-64.so.2`. Your 139 bytes of instructions now sit inside 13,624 bytes of program, most of it startup code and tables the linker added. That ratio is normal. Small sources ship inside larger programs.
 
-## Read the bytes
-
-A program on disk is bytes, and bytes can be read directly. The first sixteen bytes of `hello`:
-
-```txt
-$ xxd -l 16 build/hello
-00000000: 7f45 4c46 0201 0100 0000 0000 0000 0000  .ELF............
-```
-
-Read the left column in pairs. `7f` is a control byte, then `45 4c 46` spells `ELF` in ASCII. `02` marks 64-bit, `01` marks little-endian. This layout is documented in `man 5 elf`, and every 64-bit little-endian ELF binary starts with these same six bytes. Before the kernel runs a file, it checks this signature. Order cuts the other way too: Phase 2's AArch64 listing prints the word `0b000020`, but little-endian memory stores those four bytes as `20 00 00 0b`.
-
-Bytes also answer how big C's types are, on this machine, under this compiler. The lab's second program prints exactly that:
-
-```txt
-$ ./build/sizes
-char=1 int=4 long=8 ptr=8
-```
-
-One byte per `char`, four per `int`, eight per `long`, eight per pointer. These widths are the System V AMD64 ABI's choice. The C standard leaves each implementation to document its own (K&R Ch 2 says what the types promise; the ABI says what they measure). Portability bugs begin wherever someone assumes these numbers instead of measuring them. You just measured them.
-
 ## The shell keeps score
 
 Every command you ran above ended with a status, and the shell kept each one. The variable `$?` holds the last command's exit status. Zero means the command reported success:
@@ -112,7 +92,11 @@ $ echo $?
 1
 ```
 
-`false` is a real command that does nothing and reports failure. Its `1` proves `$?` is a live reading, not decoration. Run each line above yourself. Then replace `false` with `true`, predict `$?` before you press enter, and confirm. POSIX documents `$?` as the previous command's exit status, and every build script in this book, including each lab's `check` target, stands on that variable. A gate that cannot distinguish pass from fail is decoration. The shell's score is what makes gates checkable.
+`false` is a real command that does nothing and reports failure. Its `1` proves `$?` is a live reading, not decoration. Run each line above yourself. Then replace `false` with `true`, predict `$?` before you press enter, and confirm.
+
+Every command leaves an exit status in `$?`. `0` means success. `make check` is just a script that fails if `$?` is not 0. If a test prints "ok" and still exits 0 when it failed, the gate cannot see the failure. That is why we read `$?` instead of reading the English. POSIX documents `$?` as the previous command's exit status, and every build script in this book, including each lab's `check` target, stands on that variable.
+
+A gate that cannot tell pass from fail is decoration.
 
 **A program is built in stages, and each stage leaves a file you can read.** Preprocess, compile, assemble, link: four tools, five artifacts, every byte of the build accounted for.
 
@@ -125,7 +109,7 @@ $ echo $?
   </div>
   <div class="proof-block">
     <p class="proof-label">2 · The specification</p>
-    <p>C11 §5.1.1.2 defines translation in eight phases. The four flags above stop that translation at four observable points. The standard describes the journey; the flags mark the stops.</p>
+    <p>C11 §5.1.1.2 names eight translation phases. The four flags above stop that translation at four observable points: the standard describes the journey and the flags mark the stops you can hold.</p>
   </div>
   <div class="proof-block">
     <p class="proof-label">3 · The log</p>
@@ -147,16 +131,42 @@ Two binaries verified, four stage assertions passed with no output because each 
 1. Run `make -C labs/toolchain check` and confirm every line verifies on your machine.
 2. Open `build/hello.s`, find the `main:` label, and read the body under it down to `ret`. Name the one that performs the call.
 3. Delete the `#include` line, rebuild, and read the diagnostic. The compiler stops with `error: implicit declaration of function ‘printf’` and even suggests the missing line. Put it back.
-4. Predict `sizeof` for `short`, then add it to `sizes.c` and run. If your prediction was wrong, find whether the standard or the ABI decides the real width.
-5. Count the bytes at each stage with `wc -c` and compare against the table above. Same toolchain, same flags, same directory: same numbers. Debug info records the build path, so a different directory means different bytes.
+4. Count the bytes at each stage with `wc -c` and compare against the table above. Same toolchain, same flags, same directory: same numbers. Debug info records the build path, so a different directory means different bytes.
+5. Close the page. Write the four stages in order and the flag that stops at each one. Then reopen and check.
 
-Read in this order: K&R 2e ([the C book](https://9p.io/cm/cs/cbook/)), **Ch 2** for types; C11 **§5.1.1.2** ([the N1570 draft text](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf)); and `man 5 elf` ([where the signature is documented](https://man7.org/linux/man-pages/man5/elf.5.html)).
+Read after you finish the lab, not before: K&R 2e ([the C book](https://9p.io/cm/cs/cbook/)), **Ch 2** for what the types promise. You do not need the C standard yet. Phase 1 will quote two sentences from §6.2.4 after the dangling pointer has crashed. For the bytes on disk, see Appendix A below; for measuring your own machine, see Appendix B.
 
 ## What's next
 
-Phase 1 takes up a second program, `epilogue.c`: [Pointers and Lifetime](@/v0.1/phase-1-pointers/index.md). The stages above produce bytes; the next chapter asks how long each byte stays yours. Carry that question across: it is the whole of the next proof. The toolchain you met here is the instrument every later proof uses.
+Phase 1 takes up a second program, `winner.c`: [Pointers and Lifetime](@/v0.1/phase-1-pointers/index.md). The stages above produce bytes; the next chapter asks how long each byte stays yours. Carry that question across: it is the whole of the next proof. The toolchain you met here is the instrument every later proof uses.
 
 The rule, one last time: **every byte in the built program was put there by the toolchain.** Learn the tools in order, and any program opens the same way: stage by stage, file by file.
+
+## Appendix A — Bytes on disk
+
+A program on disk is bytes, and bytes can be read directly. The first sixteen bytes of `hello`:
+
+```txt
+$ xxd -l 16 build/hello
+00000000: 7f45 4c46 0201 0100 0000 0000 0000 0000  .ELF............
+```
+
+Read the left column in pairs. `7f` is a control byte, then `45 4c 46` spells `ELF` in ASCII. `02` marks 64-bit, `01` marks little-endian. This layout is documented in `man 5 elf`, and every 64-bit little-endian ELF binary starts with these same six bytes. Before the kernel runs a file, it checks this signature.
+
+Look for this in `man 5 elf` starting at the identification bytes: what `7f 45 4c 46` is. Endianness, and the byte order inside a word, belongs with the listings: Phase 2 shows an AArch64 word and the four bytes it is stored as.
+
+## Appendix B — Measure your machine
+
+Bytes also answer how big C's types are, on this machine, under this compiler. The lab's second program prints exactly that:
+
+```txt
+$ ./build/sizes
+char=1 int=4 long=8 ptr=8
+```
+
+One byte per `char`, four per `int`, eight per `long`, eight per pointer. These widths are the System V AMD64 ABI's choice. The C standard leaves each implementation to document its own (K&R Ch 2 says what the types promise; the ABI says what they measure). Portability bugs begin wherever someone assumes these numbers instead of measuring them. You just measured them.
+
+Your turn: predict `sizeof` for `short`, then add it to `sizes.c` and run. If your prediction was wrong, find whether the standard or the ABI decides the real width.
 
 ---
 

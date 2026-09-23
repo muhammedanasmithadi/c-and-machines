@@ -9,7 +9,7 @@ else
   SAN        = -fsanitize=address,undefined -fno-omit-frame-pointer
 endif
 
-BINS     = leak doublefree dangling fixed epilogue
+BINS     = leak doublefree dangling fixed winner
 TARGETS  = $(addprefix $(BUILDDIR)/,$(BINS))
 
 all: $(TARGETS)
@@ -29,7 +29,7 @@ $(BUILDDIR)/dangling: tests/dangling.c | $(BUILDDIR)
 $(BUILDDIR)/fixed: tests/fixed.c | $(BUILDDIR)
 	$(CC) $(CFLAGS) $(SAN) $< -o $@
 
-$(BUILDDIR)/epilogue: tests/epilogue.c | $(BUILDDIR)
+$(BUILDDIR)/winner: tests/winner.c | $(BUILDDIR)
 	$(CC) $(CFLAGS) $< -o $@
 
 check:

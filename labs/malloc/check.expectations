@@ -5,7 +5,7 @@
 # that UBSan also flags as `runtime error`); Clang 22 reports
 # `stack-use-after-return`. All are accepted; the `fail` class is what matters.
 #
-# epilogue: UB by design (a dead stack read may print 7); success is luck, so
+# winner: UB by design (a dead stack read may print 7); success is luck, so
 # assert nothing. See labs/malloc/notes/. Future coverage belongs on the
 # RETRIEVE side (a checkpoint asking why no diagnostic fires), not here.
 build-asan/leak|fail|LeakSanitizer

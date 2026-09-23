@@ -24,7 +24,7 @@ aarch64-linux-gnu-gcc $FLAGS tests/leak.c -o build-aarch64/leak
 aarch64-linux-gnu-gcc $FLAGS tests/doublefree.c -o build-aarch64/doublefree
 aarch64-linux-gnu-gcc $FLAGS tests/dangling.c -o build-aarch64/dangling
 aarch64-linux-gnu-gcc $FLAGS tests/fixed.c -o build-aarch64/fixed
-aarch64-linux-gnu-gcc $FLAGS tests/epilogue.c -o build-aarch64/epilogue
+aarch64-linux-gnu-gcc $FLAGS tests/winner.c -o build-aarch64/winner
 ```
 
 Run each binary with QEMU user-mode, pointing at the cross sysroot:
@@ -34,16 +34,16 @@ qemu-aarch64 -L $SYSROOT build-aarch64/leak
 qemu-aarch64 -L $SYSROOT build-aarch64/doublefree
 qemu-aarch64 -L $SYSROOT build-aarch64/dangling
 qemu-aarch64 -L $SYSROOT build-aarch64/fixed
-qemu-aarch64 -L $SYSROOT build-aarch64/epilogue
+qemu-aarch64 -L $SYSROOT build-aarch64/winner
 ```
 
-Expect what the native chapter teaches: `leak` prints `leak: phantom` and exits 0 (the leak is silent without a checker), `doublefree` aborts, `dangling` and `epilogue` segfault, `fixed` prints `fixed: 42`. Same sources, same lifetime law, second ISA.
+Expect what the native chapter teaches: `leak` prints `leak: phantom` and exits 0 (the leak is silent without a checker), `doublefree` aborts, `dangling` and `winner` segfault, `fixed` prints `fixed: 42`. Same sources, same lifetime law, second ISA.
 
 ## What differs on AArch64
 
 1. **AAPCS64 calling convention.** Arguments in x0..x7, return in x0.
    `malloc` here goes through the PLT to libc.
-2. **The register map.** The x86-64 listings spill `local` into the new frame (`-4(%rbp)` in Clang's epilogue, `-16(%rbp)` in GCC's). AArch64 spills into its carved frame (`[sp, #28]` in Clang's, `[sp, 24]` in GCC's) and returns in `x0`. The fault is identical: a pointer into a dead frame.
+2. **The register map.** The x86-64 listings spill `local` into the new frame (`-4(%rbp)` in Clang's winner, `-16(%rbp)` in GCC's). AArch64 spills into its carved frame (`[sp, #28]` in Clang's, `[sp, 24]` in GCC's) and returns in `x0`. The fault is identical: a pointer into a dead frame.
 3. **Memory ordering is weaker than x86 TSO.** The same C code compiles to the same
    allocation calls, but the machine's memory model differs. Phase 5 returns to
    this when locks meet fences (DMB/DSB, LDAR/STLR).

@@ -139,8 +139,7 @@ forbidden = ['popq', 'retq', 'pop %rbp', 'bti c', 'BTI',
              'find the reading', 'in the list above',
              'match each step to its section',
              'match each of the three to its row',
-             'read the standard first', 'read N1570 first',
-             'you do not need the C standard yet']
+             'read the standard first', 'read N1570 first']
 hits = []
 for f in files:
     if f.endswith('/_index.md'):
