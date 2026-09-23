@@ -154,6 +154,6 @@ Read after you finish, not before: K&R 2e ([the C book](https://9p.io/cm/cs/cboo
 
 ## What's next
 
-Phase 2 lowers C to machine code: [Machine Language](@/v0.1/phase-2-machine/index.md). You will watch a compiler spill, save, and restore registers, respecting lifetime at each step and never using what it has released. The stack frame from this chapter becomes the centerpiece, examined in depth. Carry one question in: which register holds the answer?
+Phase 2 lowers C to machine code: [Machine Language](@/v0.1/phase-2-machine/_index.md). You will watch a compiler spill, save, and restore registers, respecting lifetime at each step and never using what it has released. The stack frame from this chapter becomes the centerpiece, examined in depth. Carry one question in: which register holds the answer?
 
 The rule, one last time: **the ledger has one owner per block, and `free` is how you tell it.** Match each block to exactly one owner, and the output you observe matches the standard's promises.

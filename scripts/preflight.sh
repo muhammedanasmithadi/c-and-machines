@@ -127,25 +127,54 @@ if [ "$?" -ne 0 ]; then
 fi
 
 # First-40-lines gate: no later-phase machinery, no canon, no scavenger hunt
-# before the model exists. Counts raw body lines (after frontmatter), so any
-# author can verify by line number. Inline code is kept: naming popq in
-# backticks on line 10 is still naming it on line 10.
+# before the model exists. Block contents (fenced code, {% raw %} widgets) are
+# replaced with blank lines so line numbers stay exact: listings are the
+# module's own artifact and never count, while prose and inline code do. An
+# author verifies by opening the file and reading lines 1-40 of the body.
 # Note: QEMU is deliberately absent from this list. Phase 2A runs QEMU as its
 # concrete second run, so a global ban would forbid the artifact itself. The
 # per-module frontmatter (docs/module-template.md) still declares QEMU
-# forbidden for 1A/1B, enforced in review.
+# forbidden for 1A/1B, enforced in review. Likewise `pop %rbp` (spaced) is
+# module 2B's own vocabulary and stays out of the global list; the unspaced
+# `popq`/`retq` forms still catch prose that names later-phase teardown early.
 module_hits=$(python3 - <<'EOF'
 import re, subprocess
 files = subprocess.run(
     ['find', 'content/v0.1', '-name', 'index.md'],
     capture_output=True, text=True).stdout.split()
-forbidden = ['popq', 'retq', 'pop %rbp', 'bti c', 'BTI',
+forbidden = ['popq', 'retq', 'bti c', 'BTI',
              'AddressSanitizer', 'Valgrind',
              'two-gate', 'two gate', 'primary gate',
              'find the reading', 'in the list above',
              'match each step to its section',
              'match each of the three to its row',
              'read the standard first', 'read N1570 first']
+def blank_blocks(body):
+    out, lines = [], body.splitlines()
+    i = 0
+    while i < len(lines):
+        if lines[i].strip().startswith('```'):
+            out.append('')
+            i += 1
+            while i < len(lines) and not lines[i].strip().startswith('```'):
+                out.append('')
+                i += 1
+            if i < len(lines):
+                out.append('')
+                i += 1
+        elif '{% raw %}' in lines[i]:
+            out.append('')
+            i += 1
+            while i < len(lines) and '{% endraw %}' not in lines[i]:
+                out.append('')
+                i += 1
+            if i < len(lines):
+                out.append('')
+                i += 1
+        else:
+            out.append(lines[i])
+            i += 1
+    return '\n'.join(out)
 hits = []
 for f in files:
     if f.endswith('/_index.md'):
@@ -153,7 +182,7 @@ for f in files:
     t = open(f).read()
     # frontmatter ends at the second +++
     body = t.split('+++', 2)[-1] if t.startswith('+++') else t
-    first40 = '\n'.join(body.splitlines()[:40])
+    first40 = '\n'.join(blank_blocks(body).splitlines()[:40])
     low = first40.lower()
     for term in forbidden:
         if term.lower() in low:

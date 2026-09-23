@@ -1,15 +1,18 @@
 +++
-title = "Machine Language"
-description = "Phase 2 reads one C function in two dialects, x86-64 and AArch64, down to the bytes."
+title = "2A — Same C, two dialects"
+description = "One add function compiled for x86-64 and AArch64. The outputs agree and the spellings differ."
 
 [extra]
 ref_build = "GCC 16.2.1 · Fedora 44 x86-64 · QEMU 10.2.2 AArch64"
 entry = "02"
-order = 2
+module_id = "2A"
+law = "The listing is what runs, not the C source."
+pretrain = ["instruction", "register", "listing", "argument", "return"]
+order = 1
 +++
 
 <div class="epigraph">
-<p>A C program means whatever its instructions do.</p>
+<p>The listing is what runs, not the C source.</p>
 <p class="attribution">— the rule, stated in advance, proved below</p>
 </div>
 
@@ -81,7 +84,7 @@ The same function, compiled for ARM's 64-bit instruction set:
   40074c:	d65f03c0 	ret
 ```
 
-Cover the listing and predict where the sum lands before reading on. Same shape, different syllables. The first line, `bti c`, marks a valid indirect-branch target; it guards, it does not compute. The frame setup starts on the next line. The caller placed the arguments in `w0` and `w1`, the 32-bit halves of the `x0` and `x1` registers, per AAPCS64. The function spills both to its frame, reloads them, and `add w0, w1, w0`, bytes `0b000020`, writes the sum over `w0`. The answer leaves in the same register the first argument arrived in.
+Cover the listing and predict where the sum lands before reading on. Same shape, different syllables. The first line, `bti c`, marks a valid indirect-branch target; it guards, it does not compute, and you can ignore it until the security chapter. The frame setup starts on the next line. The caller placed the arguments in `w0` and `w1`, the 32-bit halves of the `x0` and `x1` registers, per AAPCS64. The function spills both to its frame, reloads them, and `add w0, w1, w0`, bytes `0b000020`, writes the sum over `w0`. The answer leaves in the same register the first argument arrived in.
 
 ## Same sum, two dialects
 
@@ -99,19 +102,7 @@ Pick any row and find it in both listings above:
 
 Both columns are the program. Each is what the compiler emitted for its machine, and each runs on its machine. The C source is the shared text; the listings are its two executions. Portability means the behavior survives the change of dialect, and here you watch it survive: `add: 42` on both.
 
-## Frames, built and torn down
-
-Both listings build a stack frame on entry and tear it down on exit at `-O0`: x86-64 pushes the old base pointer and anchors `%rbp`; AArch64 subtracts 16 from the stack pointer. The stores and loads between those two lines are the function's short-term memory: `a` and `b` live at frame offsets for the few instructions that need them.
-
-This is the kind of frame Phase 1 saw torn down. `winner` returned an address into exactly this structure after the teardown lines ran. Find the teardown in each listing above: `pop %rbp` on one side, `add sp, sp, #0x10` on the other. Find them, and the dangling pointer stops being abstract. The object lived between the setup line and the teardown line, and not one instruction longer. (`-O2` may skip the frame entirely, as the collapsed `winner` shows — one more reason to read the listing.)
-
-## Bytes are instructions
-
-The left column of each listing is the program itself: `01 d0` is the addition on x86-64, two bytes the processor fetches, decodes, and executes. `0b000020` is the addition on AArch64: four bytes, and every AArch64 instruction is exactly four wide. Assemblers turn text into these bytes; disassemblers turn them back. For these two listings, nothing is lost in either direction, which is why `objdump` can show both side by side with nothing hidden.
-
-Find the `add` bytes in each listing once more. A C program is text you write, and it is also bytes the machine reads. Both descriptions are complete. When they disagree about what happens next, the bytes win, because the bytes are what runs.
-
-**A C program means whatever its instructions do.** Read the listing before you predict the behavior, and the behavior stops surprising you. Where the standard leaves behavior undefined, the listing still shows what this build did. Read that, not your intention.
+**The listing is what runs, not the C source.** You have seen both listings agree on 42 and disagree on spelling, so the sentence now has content. Where the standard leaves behavior undefined, the listing still shows what this build did. Read that, not your intention.
 
 ## Proof in three parts
 
@@ -144,17 +135,9 @@ The first line is the gate's verdict on x86-64. The second is QEMU's stdout from
 1. Run `make -C labs/asm check` and confirm every line verifies, including the emulated run.
 2. Change `+` to `-`, predict the new output, and name the instruction line that must change in each listing before you rebuild. Then rebuild and check both predictions.
 3. Run the AArch64 binary without QEMU: `./build-aarch64/add`. Running it prints `cannot execute binary file: Exec format error` and exits 126 on this machine, which registers no binfmt handler for the architecture: the kernel loads only its own machine's format, so the message marks instruction sets as real boundaries.
-4. Open both `add.s` files and find where each function spills its arguments. Count the stores. Both spill twice at `-O0`; consider what `-O2` might skip, then compile with `-O2` and read the answer.
-5. Write `mul` beside `add`: same shape, `return a * b`, printed from `main`. Predict its two listing lines (the sum lines with the operator swapped), then verify against both outputs.
+4. Write `mul` beside `add`: same shape, `return a * b`, printed from `main`. Predict its two listing lines (the sum lines with the operator swapped), then verify against both outputs.
+5. Without looking, fill this from memory: first argument on x86-64? First argument on ARM? Return register on x86-64? Return register on ARM? Then reopen the table and check.
 
-Read in this order: the System V AMD64 ABI ([the x86-64 psABI project](https://gitlab.com/x86-psABIs/x86-64-ABI)) for the register contract; AAPCS64 ([the procedure-call standard itself](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst)) for ARM's; and the Intel SDM ([the Intel manuals index](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)) for the byte definitions.
+Read after you finish, not before: the System V AMD64 ABI ([the x86-64 psABI project](https://gitlab.com/x86-psABIs/x86-64-ABI)) for the register contract (look for which registers carry the first two arguments and the return value); AAPCS64 ([the procedure-call standard itself](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst)) for ARM's (look for `w0` and `w1`); and the Intel SDM ([the Intel manuals index](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)) for the byte definitions.
 
-## What's next
-
-Phase 3 puts these instructions on a real processor, with caches and a memory hierarchy between the bytes and the execution. You will measure your program's cache behavior and explain it. The listings above are what the processor fetches; the next chapter watches how fast they arrive. Carry one question in: what stands between the bytes and their execution?
-
-The rule, one last time: **a C program means whatever its instructions do.** Learn to read the listing first, and the behavior is on the record.
-
----
-
-*Sources: [System V AMD64 ABI](https://gitlab.com/x86-psABIs/x86-64-ABI); [AAPCS64](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst); [Intel SDM](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html). Prose follows WRITING.md: concrete first, mechanism before law; the machine judges.*
+Next: the frame both listings build and tear down is [2B — Frames](@/v0.1/phase-2-machine/2b-frames/index.md).

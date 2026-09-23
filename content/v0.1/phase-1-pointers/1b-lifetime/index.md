@@ -113,7 +113,7 @@ Entry *winner(void) {
 }
 ```
 
-The object survives the return. One copy exists for the whole program, and the caller may use the pointer at any time. Call it twice and compare the two addresses:
+The object survives the return. One copy exists for the whole program, and the caller may use the pointer at any time. Put that variant in a file with a `main` that calls it twice, and compare the two addresses:
 
 ```txt
 $ ./static_twice
@@ -166,17 +166,18 @@ SUMMARY: AddressSanitizer: SEGV tests/dangling.c:13 in main
 ==NNNN==ABORTING
 ```
 
-The `==NNNN==` masks the process id, which changes each run. Everything else is as the tools wrote it. Reference: GCC 16.2.1 with `-fsanitize=address,undefined`, Fedora 44, x86-64, 2026-09-16. The full four-program transcript, both sanitizers, and the other ISA live in [1C](@/v0.1/phase-1-pointers/1c-allocator/index.md) and the appendix below.
+The `==NNNN==` masks the process id, which changes each run. Everything else is as the tools wrote it. Reference: GCC 16.2.1 with `-fsanitize=address,undefined`, Fedora 44, x86-64, 2026-09-16. The ledger bugs' transcripts and the other ISA live in [1C](@/v0.1/phase-1-pointers/1c-allocator/index.md); the other compilers' listings are in the appendix below.
 
 A pointer is a promise that an object is still alive. The machine does not store the promise. If you break it, the C standard calls the behavior undefined: crash, garbage, or a lucky correct print.
 
 ## Practice
 
-1. Run the dangling program at `-O0` and `-O2`. Record both outputs.
+1. Run `winner.c` at `-O0` and `-O2`. Record both outputs.
 2. Mark the source line after which `local` is gone.
 3. Close the page. Write the law in one sentence. Write why printing 7 is still a failure.
 4. Apply the static fix. Call `winner` twice. Report whether the addresses match.
-5. (Stretch) Open *one* listing in the appendix below, the compiler you have, and find the instruction that produces the return value.
+5. Convert `winner` to the heap-storage variant above. Free the block exactly once in `main`. Run it plain and confirm it prints `7` with exit 0, then rebuild with `-fsanitize=address,undefined` and confirm the sanitizer stays silent.
+6. (Stretch) Open *one* listing in the appendix below, the compiler you have, and find the instruction that produces the return value.
 
 Read after you finish, not before: C11 **§6.2.4** ([the N1570 draft text](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf)), the two sentences quoted above. Look for the word *indeterminate*.
 
