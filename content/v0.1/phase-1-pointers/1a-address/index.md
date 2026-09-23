@@ -88,4 +88,6 @@ It prints 7 because `x` is still alive when `*p` reads it. The pointer `p` holds
 
 Read after you finish, not before: K&R 2e ([the C book](https://9p.io/cm/cs/cbook/)), **Ch 5**, for what `&` and `*` promise (address-of and dereference).
 
+**A pointer is valid only while the object it names is alive.**
+
 Next page a function returns the address of its own local, and that stops being true: [1B — Lifetime](@/v0.1/phase-1-pointers/1b-lifetime/index.md).

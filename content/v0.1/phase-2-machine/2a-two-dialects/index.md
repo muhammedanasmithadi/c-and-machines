@@ -152,4 +152,6 @@ The first line is the gate's verdict on x86-64. The second is QEMU's stdout from
 
 Read after you finish, not before: the System V AMD64 ABI ([the x86-64 psABI project](https://gitlab.com/x86-psABIs/x86-64-ABI)) for the register contract (look for which registers carry the first two arguments and the return value); AAPCS64 ([the procedure-call standard itself](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst)) for ARM's (look for `w0` and `w1`); and the Intel SDM ([the Intel manuals index](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)) for the byte definitions.
 
+The rule, one last time: **The listing is what runs, not the C source.** A C program means whatever its instructions do.
+
 Next: the frame both listings build and tear down is [2B — Frames](@/v0.1/phase-2-machine/2b-frames/index.md).

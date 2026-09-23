@@ -44,7 +44,7 @@ Every teaching module uses this order. Empty steps mean the module is not done.
 10. **Retrieval** — close the page; write the law; write why the broken variant fails.
 11. **The standard, after** — section number and the sentence to look for. Never as first instruction.
 
-The public six-step shape (artifact, run, mechanism, law, proof, practice) is this order, named for the reader. The mapping is fixed: steps 1–2 are the artifact, steps 3–4 are the run, step 5 is the mechanism, step 6 is the law, steps 7–8 plus the proof triple plus step 11 are the proof, steps 9–10 are the practice. Do not skip steps 1, 7, 10, or 11 in the draft just because the public list is shorter.
+The public six-step shape (artifact, run, mechanism, law, proof, practice) is this order, named for the reader. The mapping is fixed: steps 1–2 are the artifact, steps 3–4 are the run, step 5 is the mechanism, step 6 is the law, steps 7–8 plus the proof triple plus step 11 are the proof, steps 9–10 are the practice (complete, retrieve, and transfer to one new case). The homepage's "pointer toward what comes next" is the transfer. Do not skip steps 1, 7, 10, or 11 in the draft just because the public list is shorter.
 
 ## The law sentence
 
@@ -60,7 +60,7 @@ Bad: "The machine keeps the books." (metaphor, not a testable rule)
 Bad: two laws joined by a semicolon.
 Bad: a law that requires a term taught two chapters later.
 
-State the law once at the top as a promise, land it once right after the mechanism, prove it, state it once at the end as something to retrieve. The same sentence all three times: the epigraph, the landing, and the close must match word for word, so "write the law" in practice always means one retrievable sentence. Not three slogans and no mechanism: the landing earns its place because the mechanism sits directly above it.
+State the law in the epigraph as a promise and at the end as something to retrieve, the same sentence both times, word for word. The landing right after the mechanism may carry it a third time. Not three slogans and no mechanism: the landing earns its place because the mechanism sits directly above it, and "write the law" in practice always means the epigraph sentence.
 
 ## Voice
 
@@ -161,19 +161,17 @@ forbidden_first_40_lines:    # terms and topics that must not appear yet
 opener:                      # safe case, or one-step twist on the previous module
 worked_example:              # one listing or one table
 counterexample:              # broken variant (UB lives here)
-proof:
-  spec:
-  code:
-  log:                       # one stanza
-practice:
-  retrieve:
-  complete:
-  transfer:
+proof_spec:                  # section number and the sentence to look for
+proof_code:                  # lab files the reader will run
+proof_log:                   # one stanza
+practice_retrieve:           # law from memory
+practice_complete:           # hole in the worked example
+practice_transfer:           # one new case
 read_after:                  # source, section, look-for
 appendix:                    # other ISAs, other tools
 ```
 
-In Zola this maps to `[extra]`: `module_id`, `law`, `pretrain`, `order`. Review question: **does every paragraph earn its place in this law?** If not, move it or delete it.
+In Zola this maps to flat `[extra]` keys (`proof_spec`, `proof_code`, `proof_log`, `practice_retrieve`, `practice_complete`, `practice_transfer`), one key per template line, so file and template compare mechanically. Review question: **does every paragraph earn its place in this law?** If not, move it or delete it.
 
 ## Review checklist (use on every page)
 
@@ -226,7 +224,7 @@ lists the literal gates so the script and this file cannot drift apart.
 - **No sermon-you.** The reader is the student, not the accused.
 - **No absolute white/black thinking.** Say which it is, with evidence.
 - **No personification.** The machine does not "want", "decide", or "refuse". It *is* in a state and *does* what the hardware does.
-- **No repeated slogans.** State the law once at the top as a promise, prove it, state it once at the end as something to retrieve. In between, plain prose.
+- **No repeated slogans.** State the law in the epigraph and the close (same sentence, word for word); the landing after the mechanism may carry it a third time. In between, plain prose.
 - **Terminology under oath.** Functions are not operators; frames exist only while their function runs; "deterministic" names a build, not a language. Vocabulary errors break the contract faster than anything else.
 - **Every claim has an artifact.** Never claim a trace you have not run. Every log line in the book has a committed provenance: the command, the compiler, the date.
 - **Every page must run on a stranger's machine.** Relative links, pinned versions, dateline intact. Verify through the public URL, never localhost.

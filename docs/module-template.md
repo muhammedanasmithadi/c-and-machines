@@ -21,14 +21,12 @@ forbidden_first_40_lines:
 opener: a program that currently obeys the law  OR  a 1-step twist on the previous module
 worked_example: one listing OR one table, labels on the thing
 counterexample: the broken variant (UB lives here)
-proof:
-  spec: C11 §6.2.4 two sentences, after the run
-  code: labs/malloc/tests/dangling.c
-  log: one ASan stanza
-practice:
-  - retrieve the law
-  - completion (hole in the worked example)
-  - transfer (one new case)
+proof_spec: C11 §6.2.4 two sentences, after the run
+proof_code: labs/malloc/tests/dangling.c
+proof_log: one ASan stanza
+practice_retrieve: the law
+practice_complete: hole in the worked example
+practice_transfer: one new case
 read_after:
   - source, section, "look for this sentence"
 appendix:
@@ -50,6 +48,11 @@ order = 2
 
 - `law` is one sentence. A semicolon-joined double law fails preflight.
 - `pretrain` holds at most five terms.
-- `order` sorts modules on the phase hub (`templates/section.html`).
+- `order` sorts modules on the phase hub.
+- The remaining keys (`forbidden_first_40_lines`, `opener`, `worked_example`,
+  `counterexample`, `proof_spec`, `proof_code`, `proof_log`,
+  `practice_retrieve`, `practice_complete`, `practice_transfer`,
+  `read_after`, `appendix`) carry the template one line per key, so the file
+  and WRITING.md compare mechanically.
 - The homepage six-step list stays as the reader-facing shape. This template
   is the enforcement of "one law."

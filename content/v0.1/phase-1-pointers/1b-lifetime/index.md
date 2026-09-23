@@ -183,6 +183,8 @@ The `==NNNN==` masks the process id, which changes each run. Every quoted line i
 
 A pointer is a promise that an object is still alive. The promise is the law above in plainer words. The machine does not store the promise. If you break it, the C standard calls the behavior undefined: crash, garbage, or a lucky correct print.
 
+The law, to retrieve: **When the block exits, the automatic object's lifetime ends and the pointer's value becomes indeterminate.**
+
 ## Practice
 
 1. Run `winner.c` at `-O0` and `-O2`. Record both outputs.

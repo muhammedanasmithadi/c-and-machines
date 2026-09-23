@@ -80,4 +80,6 @@ Module 1B's law said the pointer's value becomes indeterminate when the block ex
 
 Read after you finish, not before: the two procedure-call standards linked in 2A, for how calls preserve registers across the frame (System V AMD64 ABI on the x86 side, AAPCS64 on the ARM side).
 
+**The object lives between the setup line and the teardown line.**
+
 Next: the left column of those listings is itself the program. [2C — Bytes](@/v0.1/phase-2-machine/2c-bytes/index.md) reads it.
