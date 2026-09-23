@@ -1,15 +1,9 @@
 +++
 title = "C and Machines"
-description = "From first byte to complex systems. A self-paced course in C and the computer underneath it, taught from primary sources and proven against the machine."
+description = "From first byte to complex systems. A self-paced course in C and the computer underneath it, taught from runnable programs and proven against the machine."
 +++
 
-A program is a set of promises. You promise the machine that your pointers point to live objects, that your arrays stay in bounds, that memory is returned exactly once. The machine records no promises. Break one, and the program may crash, print garbage — or print the right answer, with the debt still on the books. This book is the practice of auditing those promises before they default: the standard as contract, the code as evidence, the machine's own log as verdict.
-
-The goal is plain. By the last phase you will write, alone, substantial programs: a shell that schedules jobs, an allocator a production service can trust, a concurrent server that survives its own load, an emulator that runs real machine code. Each is a small set of ideas, verified the checkable way: run the code and read what it reports, in private, where a failure costs nothing.
-
-Along the way you see what a machine actually is. Bits become bytes, then registers, stacks, caches, pages, processes, signals, networks. Each has budgets and failure modes, governed by a few laws you will meet again in every phase.
-
-This is a textbook written as an apprenticeship. Almost nothing rests on the author's word. Each module opens with a concrete program or a real question, runs it, shows the mechanism underneath, then proves the claim three ways: the specification, the runnable code, and the machine's own log. Reproduce it on your machine, and the book becomes something you can check for yourself.
+This course teaches C by watching the machine. You will write small programs, run them, and read the files the compiler left behind. By the last phase you will have built a shell, an allocator, a concurrent server, and an emulator. Start at Phase 0. The first exercise takes ten minutes: compile twenty lines and name the four files `gcc` produced.
 
 ## How the course is built
 
@@ -37,18 +31,31 @@ Every module follows one shape, held to a fixed standard:
 5. **Proof has three parts.** The specification, the runnable code, the log. All three appear; you can check all three.
 6. **Practice closes it.** The lab, its acceptance tests, and a pointer toward what comes next.
 
-Match each step to its section in Phase 1 after you finish Phase 0.
+## Begin
 
-## How to read
+Start at [Phase 0](@/v0.1/phase-0-toolchain/index.md) (the only prerequisites are a machine and curiosity). The first exercise takes ten minutes: compile `hello.c`, stop `gcc` at each stage, and name the four files it produced.
 
-- **Local first.** Run `zola serve` and open the URL it prints. Handwriting in the margins is encouraged.
-- **You own the tools.** The build is one static binary; there is no framework between you and the prose. Read the source when you want to understand the book itself.
-- **Reproduce everything.** Every trace in this course comes from a real run on Fedora 44, x86-64, with the ARM path via QEMU. If your machine says otherwise, your machine is the truth. Find out why.
-- **Versions are frozen, not forgotten.** Snapshots live under `content/v0.x/`, each recorded with a `jj bookmark`. Every module's dateline names the edition and the reference build it was checked against.
+## How this book is made
+
+This book is written as an apprenticeship. Each module opens with a concrete program or a real question, runs it, shows the mechanism underneath, then proves the claim three ways: the specification, the runnable code, and the machine's own log. Reproduce it on your machine, and the book becomes something you can check for yourself.
+
+The goal is plain. By the last phase you will write, alone, substantial programs: a shell that schedules jobs, an allocator a production service can trust, a concurrent server that survives its own load, an emulator that runs real machine code. Each is a small set of ideas, verified the checkable way: run the code and read what it reports, in private, where a failure costs nothing.
+
+Along the way you see what a machine actually is. Bits become bytes, then registers, stacks, caches, pages, processes, signals, networks. Each has budgets and failure modes, governed by a few laws you will meet again in every phase.
+
+The full prose law lives in `WRITING.md`: concrete first, mechanism before law, the machine judges. One module teaches one law. Terms come before the model, a safe case comes before the bug, and the standard is quoted after the run, never as the first instruction.
+
+Build notes, for returning readers: run `zola serve` and open the URL it prints. The build is one static binary; there is no framework between you and the prose. Every trace in this course comes from a real run on Fedora 44, x86-64, with the ARM path via QEMU. If your machine says otherwise, your machine is the truth. Find out why. Snapshots live under `content/v0.x/`, each recorded with a `jj bookmark`. Every module's dateline names the edition and the reference build it was checked against.
+
+After Phase 1 you will have a precise version of this: a pointer is a promise that an object is still alive. The machine does not store the promise. If you break it, the C standard calls the behavior undefined — crash, garbage, or a lucky correct print.
 
 ## Source canon
 
-This book teaches from primary sources, not summaries of them. When a paragraph rests on a reference, you are told which one and why. Two gates admit a source. Primary gate: the artifact itself (a standard, a measurement) from the person who made it. Public gate: two or more independent university adoptions, or sustained technical praise with specifics. Never popularity.
+This book teaches from primary sources, cited after the lab, not before it. When a paragraph rests on a reference, you are told which one and why.
+
+**Read with this chapter** — one chapter, one section, why (one clause). Each module names its reading after the lab, under "Read after." You do not need the C standard yet. Phase 1 will quote two sentences from §6.2.4 after the dangling pointer has crashed.
+
+**Shelf** — the rest, for later:
 
 - Kernighan & Ritchie, [*The C Programming Language*](https://9p.io/cm/cs/cbook/), 2e
 - Bryant & O'Hallaron, [*Computer Systems: A Programmer's Perspective*](https://csapp.cs.cmu.edu/), 3e (CS:APP)
@@ -61,8 +68,4 @@ This book teaches from primary sources, not summaries of them. When a paragraph 
 - Wilson et al., [Dynamic Storage Allocation: A Survey and Critical Review](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf)
 - Intel SDM, ARM Architecture Reference Manual, RISC-V specs
 
-High-quality practitioner writing is admitted case by case, against the same two-gate rule, and cited as what it is. Find Phase 1's three readings in the list above before you start the chapter.
-
-## Begin
-
-Start at [Phase 0](@/v0.1/phase-0-toolchain/index.md) (the only prerequisites are a machine and curiosity). Phase 1 follows, with the address, the ledger, the proof, and the practice.
+High-quality practitioner writing is admitted case by case, against the same two-gate rule, and cited as what it is.

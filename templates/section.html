@@ -10,4 +10,25 @@
   <h1 class="doc-title">{{ section.title }}</h1>
   <p class="dateline">{{ config.extra.version_label }} · Reference build: {{ section.extra.ref_build | default(value="GCC 16 · Fedora 44 x86-64") }}</p>
   <div class="body">{{ section.content | safe }}</div>
+  {% if section.pages %}
+  <nav class="modules" aria-label="Modules in this phase">
+    <h2>Modules</h2>
+    <ol>
+    {% for p in section.pages | sort(attribute="extra.order") %}
+      <li><a href="{{ p.permalink }}">{{ p.title }}</a>{% if p.extra.law %} — {{ p.extra.law }}{% endif %}</li>
+    {% endfor %}
+    </ol>
+  </nav>
+  {% endif %}
+  {% if section.subsections %}
+  <nav class="modules" aria-label="Phases">
+    <h2>Phases</h2>
+    <ol>
+    {% for sub in section.subsections %}
+      {% set s = get_section(path=sub) %}
+      <li><a href="{{ s.permalink }}">{{ s.title }}</a></li>
+    {% endfor %}
+    </ol>
+  </nav>
+  {% endif %}
 {% endblock content %}

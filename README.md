@@ -16,7 +16,7 @@ You read it as a static site and prove every claim on your own machine.
 
 ## Write
 
-- `WRITING.md` holds the style contract (classic style with a teaching voice). Read it before you touch prose.
+- `WRITING.md` holds the prose law (one module, one law; safe case before the bug; standard after the run). Read it before you touch prose.
 - Every trace in the book comes from a real run on Fedora 44, x86-64, with the ARM leg under QEMU. If your machine says otherwise, your machine is the truth — find out why.
 
 ## Versions

@@ -1,174 +1,234 @@
-# WRITING.md — the book's prose standard
+# WRITING.md — How this book is written
 
-This file governs prose in `content/`, lab notes, and any other text the
-reader will read. It is the contract for how we write, in the same way the
-lab Makefile is the contract for how we build.
+This file is the prose law for **every** lesson, lab, and chapter in *C and Machines*.
 
-## The one requirement
+Classic style omits scaffolding so the truth feels self-evident. This book's
+reader does not yet have the scaffolding. We write so a novice can build a
+schema, then check it on the machine.
 
-The reader must be able to check everything. Prose is the scaffold around
-concrete artifacts: runnable code, the machine's log, the standard's words.
-If a claim has no artifact behind it, cut it or find the artifact.
+If a page fights this file, the page is wrong.
 
-## The classic style
+## The philosophy, in four sentences
 
-We write in the classic style, as described by Francis-Noël Thomas and Mark
-Turner in *Clear and Simple as the Truth*:
+1. **The machine is the judge.** A claim is finished when the reader can run it and read the log. The author's voice is not evidence.
+2. **One lesson is one law.** If the reader cannot retrieve the law tomorrow in one sentence, you have two lessons.
+3. **Show a live case, then the mechanism, then the law.** Names first, safe example, twist, run, *because*, one sentence, then the broken variant.
+4. **The reader must produce.** Predicting, marking a line, filling a table from memory, and patching a hole in a worked example are the lesson. Witnessing prose is not.
 
-- **Write to somebody.** A reader who is smart, curious, and new to the
-  subject. Never write to yourself, never write to a committee.
-- **Testimony and description.** The machine's log is testimony; what the
-  mechanism does is description. Both use plain, specific words.
-- **Concrete first.** Open with a program, a number, a register, a log line.
-  Abstraction earns its place afterward, and only as it serves the concrete.
-  A one-line epigraph is allowed to state the rule in advance, provided the
-  concrete artifact that proves it opens the next paragraph.
-- **Mechanism before law.** Show how something works before you state the
-  rule. A rule with no mechanism underneath is magic.
-- **One analogy at most, and it must be spec-true.** An analogy must not
-  survive past the point where the mechanism differs from it. When in doubt,
-  drop the analogy and name the mechanism.
-- **Plain vocabulary.** Use the shortest honest word. Jargon is allowed where
-  it is the real name of the thing, and only after it is introduced.
-- **No personification.** The machine does not "want", "decide", or "refuse".
-  It *is* in a state and *does* what the hardware does. Personification is
-  lazy prose hiding a lazy model.
-- **Vary the rhythm.** Short sentences for weight. Long sentences for texture.
-  A chapter made entirely of staccato lines reads like a field manual in a
-  hurry; a chapter made entirely of long lines reads like a rumor.
-- **The machine judges.** Every chapter ends with the reader able to run
-  something and watch the machine agree or disagree.
+Keep: short sentences, "you," dry exactness, labs, both ISAs, the six-step skeleton.
+Stop: atmosphere before the model, aphorisms instead of *because*, future chapter machinery, citation purity tests, a second law on the same page.
 
-## The teaching voice
+## Who we are writing for
 
-The classic style keeps the prose honest, but it does not by itself make the
-prose teach. Teaching prose shows the reader's starting point, then moves
-toward the artifact. The reader is smart, curious, and new to the subject;
-the text walks beside them, not above them.
+A reader who can type, run a compiler, and be wrong in public. They have not yet got:
 
-- **Open with the reader's likely mental model.** "You can see why someone
-  would read this as X." Then the artifact answers.
-- **Check every mental model against the artifact.** When the model is
-  wrong, the machine's output is what says so — the text just looks at it.
-- **Ask a question only when an artifact answers it next.** Never leave a
-  question hanging.
-- **Use "we" for the teacher and the reader together.** "We compile, we
-  run, we read the verdict." A direct "you" is fine for an instruction ("Run
-  the suite"), not for a sermon.
-- **State one sharp rule per section.** One. A second rule sentence makes
-  the first sound like decoration.
-- **Give the reader a job in every section.** Predict, run, read, fix. The
-  book says what to look at; the reader looks.
+- a durable picture of lifetime, the toolchain, or a calling convention
+- the habit of reading a listing before arguing with C
+- the standard as a working tool
 
-Forbidden patterns. They read as advertisement, prophecy, or decided-in-a-
-doc:
+Write for that reader on page one of every module. Experts can skip. Novices cannot invent glue you omitted.
 
-- **No triadic slogans.** "X, Y, one Z" or "Two A, two B, one C." Real
-  writing does not countenance.
-- **No not-X-but-Y openers.** "This is not a quirk. It is the definition."
-  State the fact; let it answer the reader's question.
-- **No absolute white/black thinking.** "None of these is a logic bug."
-  Say which it is, with evidence.
-- **No sermon-you.** "Your code either obeys it or the assertions fail on
-  you." The reader is the student, not the accused.
-- **No drama words.** die, 3 AM, moods, lore, phantom, magic. The machine
-  crashes; it does not die. It prints; it does not explain. A failure at
-  three in the morning is a real thing a student may face, but it is a
-  deployed-software fact, not a scare.
-- **No repeated slogans.** The epigraph may say it once in advance; the
-  closing may name it once more. In between, plain prose.
-- **One em-dash per paragraph at most.** Sentence length is the rhythm:
-  some spare, some full, some routine. Do not machine-gun the dashes.
-  Em-dashes are a budget, not a habit: if the sentence after the dash can
-  stand alone, give it a period instead.
+## The order (fixed)
 
-## Full articulation
+Every teaching module uses this order. Empty steps mean the module is not done.
 
-This book is not a telegram, a slide, or a chat reply. It is at leisure to
-use relative clauses, subordinate clauses, and every tool an articulate
-writer has. Where the chat interface saves words, the book spends them to
-achieve clarity and cadence. Write at the reader's service, not at the
-rhythm of a terminal.
+1. **Pre-train names** — at most five. One line or one table row each. Same word every time after that.
+2. **Safe concrete case** — a short program that *obeys* the law. The reader can predict it.
+3. **A small twist** — one change. Ask for a prediction. They write it down.
+4. **Run** — the machine answers. Both outcomes (crash, garbage, 7) are data.
+5. **Mechanism** — how the machine actually behaves. Use *because / so / therefore*.
+6. **The law** — one sentence, retrieveable tomorrow. Typographically marked.
+7. **Broken variant** — undefined behavior, the wrong lifetime, the missing `free`. *Here*, not in step 2.
+8. **One table or one listing** — labels on the thing they name, next to it, not three screens away.
+9. **Completion** — a hole in a worked example (change `+` to `-`; add `sizeof short`; call `winner` twice).
+10. **Retrieval** — close the page; write the law; write why the broken variant fails.
+11. **The standard, after** — section number and the sentence to look for. Never as first instruction.
 
-## The machine voice
+The public six-step shape (artifact, run, mechanism, law, proof, practice) is this order, named for the reader. Do not skip steps 1, 7, 10, or 11 in the draft just because the public list is shorter.
 
-Machine state, tools, and verdicts are rendered in the mono typeface; prose
-is serif. The CSS already enforces this separation. Do not describe machine
-output when you can show it.
+## The law sentence
 
-## Voice and register
+- One per module.
+- A sentence the reader can say aloud without the page.
+- A rule about the machine or the language, not a mood.
 
-- Imperative mood for instructions to the reader ("Run the suite:", "Fix the
-  three files").
-- Declarative mood for what the machine does ("The allocator reclaims blocks
-  only when told.").
-- Present tense throughout. The book describes how things work now, on the
-  machine the reader has.
+Good: **A pointer is valid only while the object it names is alive.**
+Good: **Every byte in the built program was put there by the toolchain.**
+Good: **The C source is not what runs; the listing is.**
 
-## Metaphors and terminology
+Bad: "The machine keeps the books." (metaphor, not a testable rule)
+Bad: two laws joined by a semicolon.
+Bad: a law that requires a term taught two chapters later.
 
-- **Metaphors must be earned.** Introduce a metaphor by its mechanism once
-  (the ledger is a literal record of blocks before it is anything else), then
-  it may recur freely. One metaphor system per paragraph; money and law are
-  the house systems, the rest are tourists.
-- **Tricolons are currency.** Spend one per page. A second tricolon must
-  advance, never echo.
-- **Terminology under oath.** Functions are not operators; frames exist only
-  while their function runs; "deterministic" names a build, not a language.
-  Vocabulary errors break the contract faster than anything else.
-- **Every page must run on a stranger's machine.** Relative links, pinned
-  versions, dateline intact. Verify through the public URL, never localhost.
+State the law once at the top as a promise, prove it, state it once at the end as something to retrieve. Not three slogans and no mechanism.
 
-## What a module must contain
+## Voice
 
-Every module (chapter, section, lab section) follows the six-step shape stated
-on the home page:
+Sound like this:
 
-1. A concrete artifact opens it.
-2. It is played forward.
-3. The mechanism underneath is shown.
-4. A rule lands in one sharp sentence.
-5. Proof has three parts: specification, runnable code, machine log.
-6. Practice closes it.
+> When `winner` returns, `local` is gone, so the address in `w` does not name an object anymore. The next read is undefined. GCC turned that address into NULL; Clang left the old bits. Both are allowed.
 
-## Facts, citations, and honesty
+Do not sound like this:
 
-- Cite primary sources by name and location (K&R 2e Ch 5-6, CS:APP 3e §9.9).
-- Tell the reader *which* page or section and *why* you rest on it.
-- If a claim comes from a person or a source with a known limit, say so.
-- Never claim a trace you have not run. Every log line in the book has a
-  committed provenance: the command, the compiler, the date.
+> Break one, and the program may crash, print garbage — or print the right answer, with the debt still on the books.
 
-## The two-gate rule for sources
+The first is exact and causal. The second is classic style: a scene that requires the schema it is supposed to teach.
 
-A source must pass one of two gates:
+Rules:
 
-- **Primary:** a researcher, academic, or standards author with a primary
-  artifact and a measurement.
-- **Public:** two or more independent university adoptions, or sustained
-  technical praise with specifics — never influencer applause.
+- Address the reader as **you**.
+- Prefer active verbs and visible agents (`gcc` pastes, the block exits, `free` returns the block).
+- Same name for the same thing. Pick *object* or *slot* or *storage*; do not hop.
+- One idea per paragraph. First sentence is the claim.
+- Wit is allowed only after the mechanism, one line, as a memory hook — never as the explanation.
+- No jokes, no memes, no "fun facts" that do not carry the law. Interesting irrelevance is extra load.
+- No moralizing about sources, tools, or other books on a teaching page.
+- Imperative mood for instructions to the reader ("Run the suite:", "Fix the three files").
+- Declarative mood for what the machine does ("The allocator reclaims blocks only when told.").
+- Present tense throughout. The book describes how things work now, on the machine the reader has.
+- Vary the rhythm. Short sentences for weight. Long sentences for texture. A chapter made entirely of staccato lines reads like a field manual in a hurry; a chapter made entirely of long lines reads like a rumor.
 
-## Reading order
+## Forbidden in the first 40 lines of a module
 
-Prose is written to be read in order, top to bottom, as in a book. If a
-reader can skip a paragraph without losing the argument, either the paragraph
-is irrelevant or the chapter's structure has failed.
+- A metaphor that will not be used as the model on that page.
+- A compiler war (GCC vs Clang vs `-O2`) before the law exists.
+- Assembly from a later phase (`popq`, `retq`, BTI, PIE).
+- A citation purity rule, a build-lore paragraph, a dateline essay.
+- "Read the standard first."
+- A scavenger hunt ("find three readings in the list above").
+- A second law.
 
-## Style checklist (pre-ship)
+Datelines, reference builds, and ISA footnotes belong after the run, or in a colophon.
 
-- [ ] Every claim has an artifact: code, log, or standard quote.
-- [ ] Concrete first — no chapter opens with a law (a proved epigraph excepted).
-- [ ] At most one spec-true analogy per argument.
-- [ ] No personification of the machine.
-- [ ] Every trace is real and reproducible.
-- [ ] Rhythm varies; no wall of staccato, no wall of long lines.
-- [ ] Prose runs top-to-bottom; nothing is skippable without cost.
-- [ ] An articulate voice, at the reader's service.
-- [ ] No triadic slogans, no not-X-but-Y openers, no sermon-you.
-- [ ] No drama words (die, 3 AM, moods, lore, phantom, magic).
-- [ ] At most one em-dash per paragraph (preflight enforces).
-- [ ] One sharp rule sentence per section.
-- [ ] The reader has a job in every section: predict, run, read, fix.
-- [ ] Metaphors earned by mechanism; one system per paragraph.
-- [ ] No second tricolon that echoes the first.
-- [ ] Versions pinned; links relative (build output grep-clean).
+## Proof in three parts (what each part is for)
+
+1. **The code** — the lab files the reader will run. Named. Short.
+2. **The specification** — the sentence in the standard, the ABI, or `man`, quoted *after* they have seen the behavior.
+3. **The log** — **one** stanza that proves *this* law. Mask pids if you must. Do not paste four ISAs, ASan, and Valgrind into the teaching column.
+
+Everything else is an **appendix**: other compilers, other ISAs, full traces, "run this by hand for the register dump." Appendices are honest. They are not the lesson.
+
+## Practice (every module)
+
+Three items, no more required, no fewer:
+
+| Kind | What it is | Example |
+|---|---|---|
+| Retrieve | Law from memory | "Write the lifetime law. Do not look." |
+| Complete | Hole in a worked example | "Change `+` to `-`. Name the instruction that must change in each listing." |
+| Transfer | One new case | "Call static `winner` twice. Do the addresses match? Why?" |
+
+Delete treasure hunts. Delete "match this list to a later chapter." Stretch ISA / sanitizer work is allowed as an optional fourth item, labeled stretch.
+
+## Sources
+
+This book *cites* primary sources. It does not *teach by handing a novice the standard*.
+
+- **Read with this lesson** — one chapter or one section, and *what to look for*, placed after the lab.
+- **Shelf** — K&R, CS:APP, Kerrisk, Intel SDM, and the rest. Linked from the back of the book, not from hello world.
+
+Two sentences from C11 §6.2.4 after a dangling pointer has crashed are teaching.
+N1570 as the first homework is not.
+
+Two gates admit a source. Primary gate: the artifact itself (a standard, a measurement) from the person who made it. Public gate: two or more independent university adoptions, or sustained technical praise with specifics. Never popularity.
+
+## Across chapters (fading, not dumping)
+
+- Start concrete, then strip to the law, then a second case that *looks different* (a heap object, the other ISA).
+- Worked example first, then a hole, then they write it.
+- A later chapter may *pay off* an earlier one (Phase 2 shows the teardown lines where Phase 1's `local` died). Name the old law; do not assume it.
+- When the reader has the schema, you may leave a small inference gap. Until then, write the *because*.
+
+## Homepage and front matter
+
+The first screen of the book is a teaching page.
+
+It contains: what they will be able to **do**, the phase table, start here (Phase 0, ten minutes), how a module works.
+
+It does not contain: promises/debt metaphors, "almost nothing rests on the author's word," two-gate canon, `jj` bookmarks, tool ownership, scavenger hunts.
+
+Build lore and philosophy may live under **How this book is made**, below the fold.
+
+## Module frontmatter (required)
+
+Every teaching file carries this. If a field is empty, the module is not done.
+
+```text
+module_id:
+law:                         # one sentence
+pretrain:                    # ≤ 5 terms
+forbidden_first_40_lines:    # terms and topics that must not appear yet
+opener:                      # safe case, or one-step twist on the previous module
+worked_example:              # one listing or one table
+counterexample:              # broken variant (UB lives here)
+proof:
+  spec:
+  code:
+  log:                       # one stanza
+practice:
+  retrieve:
+  complete:
+  transfer:
+read_after:                  # source, section, look-for
+appendix:                    # other ISAs, other tools
+```
+
+In Zola this maps to `[extra]`: `module_id`, `law`, `pretrain`, `order`. Review question: **does every paragraph earn its place in this law?** If not, move it or delete it.
+
+## Review checklist (use on every page)
+
+1. One law?
+2. Terms defined before use?
+3. Safe case before the bug?
+4. *Because* written, not implied?
+5. Same word for the same concept?
+6. Labels on the listing?
+7. One log, not a museum?
+8. Reader produces (predict / retrieve / patch)?
+9. Standard after the schema?
+10. First 40 lines clean of metaphor, future assembly, and canon?
+
+If any answer is no, the page is not done.
+
+## What we are not doing
+
+- Matching "learning styles."
+- Making fonts harder.
+- Adding decorative stories so it "sticks."
+- Unguided discovery through the standard.
+- Academic fog as rigor.
+- Classic style as rigor.
+
+Rigor here is: a law you can retrieve, a program you can run, a log you can read.
+
+## The test
+
+A new reader who has written a little C, not a compiler:
+
+1. Starts Phase 0 in ten minutes without N1570.
+2. Can write, from memory, each module's law they have finished.
+3. Meets undefined behavior *after* a live example that worked.
+4. Sees `pop %rbp` for the first time on the same page as "this is where `local` dies."
+5. Never hits a scavenger hunt.
+6. Still hears this book: short, exact, machine-first.
+
+If those six hold on every lesson, this file is being followed.
+
+## Mechanical gates (preflight-enforced)
+
+The teaching voice above is enforced by `scripts/preflight.sh`. This section
+lists the literal gates so the script and this file cannot drift apart.
+
+- **No drama words.** die, dies, died, 3 AM, moods, lore, phantom, magic. The machine crashes; it does not die. It prints; it does not explain. Fenced code blocks and inline code are stripped before the check, so verbatim machine logs never trip the gate. WRITING.md itself names the banned words, so it stays out of scope.
+- **One em-dash per paragraph at most.** Sentence length is the rhythm: some spare, some full, some routine. If the sentence after the dash can stand alone, give it a period instead.
+- **No triadic slogans.** "X, Y, one Z" or "Two A, two B, one C."
+- **No not-X-but-Y openers.** "This is not a quirk. It is the definition." State the fact; let it answer the reader's question.
+- **No sermon-you.** The reader is the student, not the accused.
+- **No absolute white/black thinking.** Say which it is, with evidence.
+- **No personification.** The machine does not "want", "decide", or "refuse". It *is* in a state and *does* what the hardware does.
+- **No repeated slogans.** State the law once at the top as a promise, prove it, state it once at the end as something to retrieve. In between, plain prose.
+- **Terminology under oath.** Functions are not operators; frames exist only while their function runs; "deterministic" names a build, not a language. Vocabulary errors break the contract faster than anything else.
+- **Every claim has an artifact.** Never claim a trace you have not run. Every log line in the book has a committed provenance: the command, the compiler, the date.
+- **Every page must run on a stranger's machine.** Relative links, pinned versions, dateline intact. Verify through the public URL, never localhost.
+- **Metaphors must be earned.** Introduce a metaphor by its mechanism once, then it may recur freely. One metaphor system per paragraph. If deleting a metaphor would not change the model, delete it.
+- **Facts, citations, and honesty.** Cite primary sources by name and location. Tell the reader which page or section and why you rest on it. If a claim comes from a person or a source with a known limit, say so.

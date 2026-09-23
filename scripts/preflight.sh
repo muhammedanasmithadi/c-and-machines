@@ -1,10 +1,10 @@
 #!/bin/sh
-# Preflight: fail if book prose uses a banned voice word.
+# Preflight: fail if book prose breaks the WRITING.md law.
 #
 # Scope is prose only: content/ pages plus lab notes. Fenced code blocks and
 # inline code are stripped first, so verbatim machine logs (e.g. "leak: phantom")
 # never trip the gate. WRITING.md itself names the banned words, so it stays
-# out of scope. The word list lives in WRITING.md ("The teaching voice").
+# out of scope. The word list lives in WRITING.md ("Mechanical gates").
 set -eu
 cd "$(dirname "$0")/.."
 
@@ -88,6 +88,87 @@ for f in files:
     if n:
         print(f'  info: {f}: {n} em-dashes in prose')
 EOF
+
+# Module law gate: every module page declares a one-sentence extra.law.
+# Module pages are content/v0.1/phase-*/<module>/index.md plus the single-page
+# Phase 0 (phase-0-toolchain/index.md). Phase hubs (_index.md) are exempt.
+python3 - <<'EOF'
+import re, subprocess, sys
+files = subprocess.run(
+    ['find', 'content/v0.1', '-name', 'index.md'],
+    capture_output=True, text=True).stdout.split()
+fail = False
+for f in files:
+    if f.endswith('/_index.md'):
+        continue
+    parts = f.split('/')
+    # content/v0.1/phase-X/index.md is the phase page itself (Phase 0, or a
+    # hub-shaped page kept for compatibility): Phase 0 must carry a law.
+    is_phase_root = len(parts) == 4
+    is_module = len(parts) == 5
+    if not (is_phase_root or is_module):
+        continue
+    if 'phase-0-toolchain' not in f and not is_module:
+        continue
+    t = open(f).read()
+    m = re.search(r'^law\s*=\s*"(.*)"', t, flags=re.M)
+    if not m:
+        print(f'preflight: missing extra.law in {f}')
+        fail = True
+        continue
+    law = m.group(1).strip()
+    if not law or law.count(';') > 0 or len(law.split()) < 4:
+        print(f'preflight: law not one sentence in {f}: {law[:80]}')
+        fail = True
+sys.exit(1 if fail else 0)
+EOF
+if [ "$?" -ne 0 ]; then
+  fail=1
+fi
+
+# First-40-lines gate: no later-phase machinery, no canon, no scavenger hunt
+# before the model exists. Code blocks and inline code stripped first.
+module_hits=$(python3 - <<'EOF'
+import re, subprocess
+files = subprocess.run(
+    ['find', 'content/v0.1', '-name', 'index.md'],
+    capture_output=True, text=True).stdout.split()
+forbidden = ['popq', 'retq', 'pop %rbp', 'bti c', 'BTI',
+             'AddressSanitizer', 'Valgrind', 'qemu-aarch64', 'QEMU',
+             'two-gate', 'two gate', 'primary gate',
+             'find the reading', 'in the list above',
+             'match each step to its section',
+             'match each of the three to its row',
+             'read the standard first', 'read N1570 first',
+             'you do not need the C standard yet']
+hits = []
+for f in files:
+    if f.endswith('/_index.md'):
+        continue
+    t = open(f).read()
+    # frontmatter ends at the second +++
+    body = t.split('+++', 2)[-1] if t.startswith('+++') else t
+    body = re.sub(r'```.*?```', '', body, flags=re.S)
+    body = re.sub(r'{% raw %}.*?{% endraw %}', '', body, flags=re.S)
+    body = body.replace('`', ' ')
+    lines = [l for l in body.splitlines()
+             if l.strip() and not l.strip().startswith('<')]
+    first40 = '\n'.join(lines[:40])
+    low = first40.lower()
+    for term in forbidden:
+        if term.lower() in low:
+            idx = low.index(term.lower())
+            ctx = first40[max(0, idx-30):idx+40].replace('\n', ' ')
+            hits.append(f'{f}: forbidden in first 40 lines: "{term}" ...{ctx}...')
+            break
+print('\n'.join(hits))
+EOF
+)
+if [ -n "$module_hits" ]; then
+  echo "preflight: first-40-lines violation"
+  echo "$module_hits" | sed 's/^/  /'
+  fail=1
+fi
 
 if [ "$fail" -ne 0 ]; then
   echo "preflight: FAILED"

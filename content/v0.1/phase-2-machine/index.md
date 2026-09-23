@@ -5,6 +5,7 @@ description = "Phase 2 reads one C function in two dialects, x86-64 and AArch64,
 [extra]
 ref_build = "GCC 16.2.1 · Fedora 44 x86-64 · QEMU 10.2.2 AArch64"
 entry = "02"
+order = 2
 +++
 
 <div class="epigraph">
@@ -156,4 +157,4 @@ The rule, one last time: **a C program means whatever its instructions do.** Lea
 
 ---
 
-*Sources: [System V AMD64 ABI](https://gitlab.com/x86-psABIs/x86-64-ABI); [AAPCS64](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst); [Intel SDM](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html). Prose follows the classic style with a teaching voice (Thomas & Turner, *Clear and Simple as the Truth*): concrete first, mechanism before law; the machine judges.*
+*Sources: [System V AMD64 ABI](https://gitlab.com/x86-psABIs/x86-64-ABI); [AAPCS64](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst); [Intel SDM](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html). Prose follows WRITING.md: concrete first, mechanism before law; the machine judges.*

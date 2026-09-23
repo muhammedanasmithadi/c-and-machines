@@ -5,6 +5,7 @@ description = "Phase 1 explains storage duration, why a returned address can be 
 [extra]
 ref_build = "GCC 16.2.1 · Fedora 44 x86-64"
 entry = "01"
+order = 1
 +++
 
 # Phase 1 — Pointers and Lifetime
@@ -327,4 +328,4 @@ The rule, one last time: **an address is only as good as the object it points to
 
 ---
 
-*Sources: C11 refs via N1570 draft, 6.2.4, 7.22.3; [K&R 2e](https://9p.io/cm/cs/cbook/) Ch 5–6, App A; [CS:APP 3e](https://csapp.cs.cmu.edu/) §9.9; [Wilson et al. (1995)](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf); [Drepper (2007)](https://lwn.net/Articles/250967/). Prose follows the classic style with a teaching voice (Thomas & Turner, *Clear and Simple as the Truth*): concrete first, mechanism before law; the machine judges.*
+*Sources: C11 refs via N1570 draft, 6.2.4, 7.22.3; [K&R 2e](https://9p.io/cm/cs/cbook/) Ch 5–6, App A; [CS:APP 3e](https://csapp.cs.cmu.edu/) §9.9; [Wilson et al. (1995)](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf); [Drepper (2007)](https://lwn.net/Articles/250967/). Prose follows WRITING.md: concrete first, mechanism before law; the machine judges.*

@@ -5,6 +5,10 @@ description = "Phase 0 follows one C program through four stages into bytes, and
 [extra]
 ref_build = "GCC 16.2.1 · Fedora 44 x86-64"
 entry = "00"
+module_id = "0"
+law = "Every byte in the built program was put there by the toolchain."
+pretrain = ["source", "preprocess", "compile", "assemble", "link"]
+order = 0
 +++
 
 <div class="epigraph">
@@ -156,4 +160,4 @@ The rule, one last time: **every byte in the built program was put there by the 
 
 ---
 
-*Sources: C11 refs via N1570 draft, 5.1.1.2; [K&R 2e](https://9p.io/cm/cs/cbook/) Ch 2; [`man 5 elf`](https://man7.org/linux/man-pages/man5/elf.5.html). Prose follows the classic style with a teaching voice (Thomas & Turner, *Clear and Simple as the Truth*): concrete first, mechanism before law; the machine judges.*
+*Sources: C11 refs via N1570 draft, 5.1.1.2; [K&R 2e](https://9p.io/cm/cs/cbook/) Ch 2; [`man 5 elf`](https://man7.org/linux/man-pages/man5/elf.5.html). Prose follows WRITING.md: concrete first, mechanism before law; the machine judges.*
