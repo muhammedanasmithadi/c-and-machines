@@ -8,7 +8,7 @@ entry = "00"
 +++
 
 <div class="epigraph">
-<p>Every byte in the running program was put there by a tool you invoked.</p>
+<p>Every byte in the built program was put there by the toolchain.</p>
 <p class="attribution">— the rule, stated in advance, proved below</p>
 </div>
 
@@ -83,7 +83,7 @@ $ xxd -l 16 build/hello
 00000000: 7f45 4c46 0201 0100 0000 0000 0000 0000  .ELF............
 ```
 
-Read the left column in pairs. `7f` is a control byte, then `45 4c 46` spells `ELF` in ASCII. `02` marks 64-bit, `01` marks little-endian. This layout is documented in `man 5 elf`, and every 64-bit little-endian Linux program starts with these same six bytes. Before the kernel runs a file, it checks this signature.
+Read the left column in pairs. `7f` is a control byte, then `45 4c 46` spells `ELF` in ASCII. `02` marks 64-bit, `01` marks little-endian. This layout is documented in `man 5 elf`, and every 64-bit little-endian ELF binary starts with these same six bytes. Before the kernel runs a file, it checks this signature. Order cuts the other way too: Phase 2's AArch64 listing prints the word `0b000020`, but little-endian memory stores those four bytes as `20 00 00 0b`.
 
 Bytes also answer how big C's types are, on this machine, under this compiler. The lab's second program prints exactly that:
 
@@ -110,7 +110,7 @@ $ echo $?
 
 `false` is a real command that does nothing and reports failure. Its `1` proves `$?` is a live reading, not decoration. Run each line above yourself. Then replace `false` with `true`, predict `$?` before you press enter, and confirm. POSIX documents `$?` as the previous command's exit status, and every build script in this book, including each lab's `check` target, stands on that variable. A gate that cannot distinguish pass from fail is decoration. The shell's score is what makes gates checkable.
 
-**A program is built in stages, and each stage leaves a file you can read.** Preprocess, compile, assemble, link: four tools, five artifacts, every byte accounted for.
+**A program is built in stages, and each stage leaves a file you can read.** Preprocess, compile, assemble, link: four tools, five artifacts, every byte of the build accounted for.
 
 ## Proof in three parts
 
@@ -146,14 +146,14 @@ Two binaries verified, four stage assertions passed with no output because each 
 4. Predict `sizeof` for `short`, then add it to `sizes.c` and run. If your prediction was wrong, find whether the standard or the ABI decides the real width.
 5. Count the bytes at each stage with `wc -c` and compare against the table above. Same toolchain, same flags, same directory: same numbers. Debug info records the build path, so a different directory means different bytes.
 
-Read in this order: K&R 2e ([the C book](https://9p.io/cm/cs/cbook/)), **Ch 2** for types; C11 **§5.1.1.2** ([where translation is defined](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf)); and `man 5 elf` ([where the signature is documented](https://man7.org/linux/man-pages/man5/elf.5.html)).
+Read in this order: K&R 2e ([the C book](https://9p.io/cm/cs/cbook/)), **Ch 2** for types; C11 **§5.1.1.2** ([the N1570 draft text](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf)); and `man 5 elf` ([where the signature is documented](https://man7.org/linux/man-pages/man5/elf.5.html)).
 
 ## What's next
 
-Phase 1 takes up the program you just built: [Pointers and Lifetime](@/v0.1/phase-1-pointers/index.md). The stages above produce bytes; the next chapter asks how long each byte stays yours. Carry that question across: it is the whole of the next proof. The toolchain you met here is the instrument every later proof uses.
+Phase 1 takes up a second program, `epilogue.c`: [Pointers and Lifetime](@/v0.1/phase-1-pointers/index.md). The stages above produce bytes; the next chapter asks how long each byte stays yours. Carry that question across: it is the whole of the next proof. The toolchain you met here is the instrument every later proof uses.
 
-The rule, one last time: **every byte in the running program was put there by a tool you invoked.** Learn the tools in order, and any program opens the same way: stage by stage, file by file.
+The rule, one last time: **every byte in the built program was put there by the toolchain.** Learn the tools in order, and any program opens the same way: stage by stage, file by file.
 
 ---
 
-*Sources: C11 5.1.1.2; [K&R 2e](https://9p.io/cm/cs/cbook/) Ch 2; [`man 5 elf`](https://man7.org/linux/man-pages/man5/elf.5.html). Prose follows the classic style with a teaching voice (Thomas & Turner, *Clear and Simple as the Truth*): concrete first, mechanism before law; the machine judges.*
+*Sources: C11 refs via N1570 draft, 5.1.1.2; [K&R 2e](https://9p.io/cm/cs/cbook/) Ch 2; [`man 5 elf`](https://man7.org/linux/man-pages/man5/elf.5.html). Prose follows the classic style with a teaching voice (Thomas & Turner, *Clear and Simple as the Truth*): concrete first, mechanism before law; the machine judges.*

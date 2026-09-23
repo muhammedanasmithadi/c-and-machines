@@ -3,13 +3,13 @@ title = "C and Machines"
 description = "From first byte to complex systems. A self-paced course in C and the computer underneath it, taught from primary sources and proven against the machine."
 +++
 
-A program is a set of promises. You promise the machine that your pointers point to live objects, that your arrays stay in bounds, that memory is returned exactly once. The machine keeps no record of your promises; it keeps only their consequences. Break one, and the program may crash, print garbage — or print the right answer, with the debt still on the books. This book is the practice of auditing those promises before they default: the standard as contract, the code as evidence, the machine's own log as verdict.
+A program is a set of promises. You promise the machine that your pointers point to live objects, that your arrays stay in bounds, that memory is returned exactly once. The machine records no promises. Break one, and the program may crash, print garbage — or print the right answer, with the debt still on the books. This book is the practice of auditing those promises before they default: the standard as contract, the code as evidence, the machine's own log as verdict.
 
 The goal is plain. By the last phase you will write, alone, substantial programs: a shell that schedules jobs, an allocator a production service can trust, a concurrent server that survives its own load, an emulator that runs real machine code. Each is a small set of ideas, verified the checkable way: run the code and read what it reports, in private, where a failure costs nothing.
 
 Along the way you see what a machine actually is. Bits become bytes, then registers, stacks, caches, pages, processes, signals, networks. Each has budgets and failure modes, governed by a few laws you will meet again in every phase.
 
-This is a textbook written as an apprenticeship. Nothing rests on the author's word. Each module opens with a concrete program or a real question, runs it, shows the mechanism underneath, then proves the claim three ways: the specification, the runnable code, and the machine's own log. Reproduce it on your machine, and the book becomes something you can check for yourself.
+This is a textbook written as an apprenticeship. Almost nothing rests on the author's word. Each module opens with a concrete program or a real question, runs it, shows the mechanism underneath, then proves the claim three ways: the specification, the runnable code, and the machine's own log. Reproduce it on your machine, and the book becomes something you can check for yourself.
 
 ## How the course is built
 
@@ -17,9 +17,9 @@ Eight phases carry you from the first byte to working systems. Each phase ends w
 
 | Phase | Territory | Exit artifact |
 |---|---|---|
-| [0](@/v0.1/phase-0-toolchain/index.md) | Bits, numbers, the C toolchain, the shell | Build a C program by hand, byte by byte |
+| [0](@/v0.1/phase-0-toolchain/index.md) | Bits, numbers, the C toolchain, the shell | Build a C program by hand, stage by stage |
 | [1](@/v0.1/phase-1-pointers/index.md) | C mastery: pointers, memory, build systems | Clean, leak-free C under ASan + Valgrind |
-| [2](@/v0.1/phase-2-machine/index.md) | Machine language, x86-64 and AArch64 | Read any disassembly; translate C to both ISAs |
+| [2](@/v0.1/phase-2-machine/index.md) | Machine language, x86-64 and AArch64 | Read small disassemblies; translate C to both ISAs |
 | 3 | Processor, optimizing, memory hierarchy | Measure and explain your program's cache behavior |
 | 4 | Linking, virtual memory, allocators | A `malloc` package that passes stress |
 | 5 | Processes, signals, I/O, concurrency, networks | A shell with jobs; a concurrent Tiny server |
@@ -36,6 +36,8 @@ Every module follows one shape, held to a fixed standard:
 4. **A law lands in one sharp sentence.** The rule, stated so it can be repeated from memory.
 5. **Proof has three parts.** The specification, the runnable code, the log. All three appear; you can check all three.
 6. **Practice closes it.** The lab, its acceptance tests, and a pointer toward what comes next.
+
+Match each step to its section in Phase 1 after you finish Phase 0.
 
 ## How to read
 
@@ -59,7 +61,7 @@ This book teaches from primary sources, not summaries of them. When a paragraph 
 - Wilson et al., [Dynamic Storage Allocation: A Survey and Critical Review](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf)
 - Intel SDM, ARM Architecture Reference Manual, RISC-V specs
 
-High-quality practitioner writing is admitted case by case, against the same two-gate rule, and cited as what it is.
+High-quality practitioner writing is admitted case by case, against the same two-gate rule, and cited as what it is. Find Phase 1's three readings in the list above before you start the chapter.
 
 ## Begin
 

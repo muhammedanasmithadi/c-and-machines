@@ -50,7 +50,7 @@ Either outcome is the compiler's legal answer, and both repay a run on your mach
 
 You can see why someone would expect `7`. Nothing overwrote that stack slot between the return and the read, so the value should still be sitting there. The standard says otherwise. Here is why.
 
-`winner` returns `&local`. The pointer keeps its address. The object it names is gone.
+`winner` returns `&local`. The address bits survive the return. The object does not, and from that moment the standard calls the pointer's value indeterminate. The object it names is gone.
 
 `local` has **automatic storage duration**. Section 6.2.4 of the C standard sets its lifetime: the object exists from entry into the block until exit from the block. When `winner` returns, the block exits and the lifetime ends. The pointer still holds the old address, but no object lives there anymore.
 
@@ -65,11 +65,11 @@ The standard chooses its word carefully: the value becomes *indeterminate*. On t
 
 ## The three ways lifetime goes wrong
 
-Every lifetime bug is one of three failures of bookkeeping:
+Every lifetime bug in this book is one of three failures of bookkeeping:
 
 1. **Use after free.** You read or write through a pointer after the object's lifetime has ended. The opening program does this: `winner` returns `&local`, and `w->points` reads past the block's exit. Match each of the three to its row in the table below.
 2. **Double free.** Two paths release the same block. The allocator's record for the block breaks, and the next `malloc` returns a block that two owners believe is theirs.
-3. **Leak.** Memory you no longer need, never returned. Small in a test, unbounded in a server. The process grows until it exhausts its address space or the kernel terminates it.
+3. **Leak.** Memory you no longer need, never returned. Small in a test, unbounded in a server. Left running, the process grows until it exhausts its address space or meets the kernel's out-of-memory killer.
 
 All three share a root cause: a mismatch between when you believe an object exists and when the storage is still yours to use.
 
@@ -79,7 +79,7 @@ All three share a root cause: a mismatch between when you believe an object exis
 | Double free | It is safe to `free` twice | Each block is returned once; the second `free` is a stranger's call, even from the same hand |
 | Leak | I will `free` it later | The allocator reclaims blocks only when told |
 
-The three bugs charge different prices. A leak costs memory and time: resident memory (RSS) climbs as the allocator hands out new pages, and latency follows. A double free costs correctness first: the next `malloc` can hand one block to two owners, and each writes over the other. Use after free is the hardest to chase. The program prints the right answer on your laptop under one compiler, and the wrong answer on another machine from the same source.
+The three bugs charge different prices. A leak costs memory and time: resident memory (RSS) climbs as the allocator hands out new pages, and latency often follows. A double free costs correctness first: the allocator's record breaks, and a later `malloc` may hand the same block to a new owner while the old one still writes there. Use after free is the hardest to chase. The program prints the right answer on your laptop under one compiler, and the wrong answer on another machine from the same source.
 
 The syntax in each case is correct. The mistake in each is a misjudged lifetime.
 
@@ -94,7 +94,7 @@ The C standard divides storage into four durations. Each row says when the objec
 | Thread | thread's lifetime | thread exit |
 | Allocated | until `free` | your `free` |
 
-<aside class="sidenote"><a href="http://booksite.elsevier.com/9780128017333/">Patterson and Hennessy</a> (Chapter 2, "Instructions: Language of the Computer") place each of these rows in a distinct region of virtual memory. The four rows name the stack, the data segment, the TLS block, and the heap: four regions the OS places at distinct addresses.</aside>
+<aside class="sidenote"><a href="http://booksite.elsevier.com/9780128017333/">Patterson and Hennessy</a> (Chapter 2, "Instructions: Language of the Computer", [the book](http://booksite.elsevier.com/9780128017333/)) place each of these rows in a distinct region of virtual memory in a typical Linux process. The four rows name the stack, the data segment, the TLS block, and the heap: four regions the OS places at distinct addresses.</aside>
 
 The mistake in `winner` fits one row of that table: it returned a pointer to an automatic object, and the caller used it after the block exited. Point to that row before reading on.
 
@@ -121,6 +121,8 @@ The second fix hands the caller responsibility for the object's lifetime. Alloca
 <div class="code-label">winner() — heap-storage variant</div>
 
 ```c
+#include <stdlib.h>
+
 Entry *winner(void) {
   Entry *p = malloc(sizeof *p);
   if (p) p->points = 7;
@@ -197,11 +199,11 @@ winner:
 </div>
 {% endraw %}
 
-The four listings fall into two camps. Clang computes the slot's address and returns it. The stack slot survives into `main`, so the read may still find the `7`. The `-O0` run printed `7` because nothing had reused the slot yet. The `-O2` run printed junk. The slot had been reused before the read; tracing whose reuse is exactly the kind of question Phase 2 teaches you to answer from disassembly. GCC takes the other path. It replaces the address with `0x0` before the program runs. At `-O0` it still stores `7` to the dead slot, then folds the address anyway. At `-O2` the whole body collapses to `xor %eax,%eax; ret`, and the NULL dereference is the crash in the log. Each listing is the machine's answer on that toolchain. The rule is the same on both architectures.
+The four listings fall into two camps. Clang computes the slot's address and returns it. The stack slot survives into `main`, so the read may still find the `7`. The `-O0` run printed `7`: consistent with a slot nothing had reused yet. The `-O2` run printed junk, consistent with reuse before the read; tracing whose reuse is exactly the kind of question Phase 2 teaches you to answer from disassembly. GCC takes the other path. It replaces the address with `0x0` before the program runs. At `-O0` it still stores `7` to the dead slot, then folds the address anyway. At `-O2` the whole body collapses to `xor %eax,%eax; ret`, and the NULL dereference is the crash in the log. Each listing is the machine's answer on that toolchain. The rule is the same on both architectures.
 
 ## The heap, step by step
 
-Walk the ledger yourself. Before each press, say which block the allocator must split or coalesce. Each press runs one `malloc` or `free` and shows what the ledger does.
+Walk the ledger yourself. Before each press, say which block the allocator must split or coalesce. Each press steps one `malloc` or `free` in the model and shows what the ledger records.
 
 {% raw %}
 <div class="memmap-stepper" data-memmap-step>
@@ -300,7 +302,7 @@ leak: phantom
 
 (The same masking applies.) Valgrind 3.27.1 needs no special build flags. It runs the plain `./build/leak` and watches what the program does from the outside.
 
-The double-free is caught at the second `free`, exactly where the source breaks the rule. The dangling case deserves a close look. `return &local` is undefined behavior, so the compiler may do anything with it. GCC 16 folds the would-be address into `NULL`. The UndefinedBehaviorSanitizer line ("load of null pointer") and the SEGV on address 0x000000000000 record that fold. The crash is deterministic on this build. Its cause is line 13 of `dangling.c`.
+The double-free is caught at the second `free`, exactly where the source breaks the rule. The dangling case deserves a close look. `return &local` hands out an address whose lifetime ends at the block's exit: forming the address is legal, but the undefined behavior happens when the caller uses it afterward. GCC 16 folds the would-be address into `NULL`. The UndefinedBehaviorSanitizer line ("load of null pointer") and the SEGV on address 0x000000000000 record that fold. The crash is deterministic on this build. Its cause is line 13 of `dangling.c`, the line that reads through the dead pointer.
 
 ## Practice
 
@@ -319,10 +321,10 @@ Phase 2 lowers C to machine code. You will watch a compiler spill, save, and res
 
 Phase 3 puts that machine code on a real processor, with caches and a memory hierarchy. You will measure your program's cache behavior and explain it.
 
-Phase 4 brings the same bookkeeping to the whole system: virtual memory, page tables, and the kernel's record of which pages are resident. A pointer's validity then depends on page residency, not just your `malloc` call. Lifetime at the small scale follows the same rule as lifetime at the large scale.
+Phase 4 brings the same bookkeeping to the whole system: virtual memory, page tables, and the kernel's record of which pages are resident. Whether that pointer can actually be read then depends on page residency too, not just your `malloc` call. Lifetime at the small scale follows the same rule as lifetime at the large scale.
 
 The rule, one last time: **an address is only as good as the object it points to.** Match each pointer's lifetime to its object, and the output you observe matches the standard's promises.
 
 ---
 
-*Sources: C11 6.2.4, 7.22.3; [K&R 2e](https://9p.io/cm/cs/cbook/) Ch 5–6, App A; [CS:APP 3e](https://csapp.cs.cmu.edu/) §9.9; [Wilson et al. (1995)](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf); [Drepper (2007)](https://lwn.net/Articles/250967/). Prose follows the classic style with a teaching voice (Thomas & Turner, *Clear and Simple as the Truth*): concrete first, mechanism before law; the machine judges.*
+*Sources: C11 refs via N1570 draft, 6.2.4, 7.22.3; [K&R 2e](https://9p.io/cm/cs/cbook/) Ch 5–6, App A; [CS:APP 3e](https://csapp.cs.cmu.edu/) §9.9; [Wilson et al. (1995)](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf); [Drepper (2007)](https://lwn.net/Articles/250967/). Prose follows the classic style with a teaching voice (Thomas & Turner, *Clear and Simple as the Truth*): concrete first, mechanism before law; the machine judges.*

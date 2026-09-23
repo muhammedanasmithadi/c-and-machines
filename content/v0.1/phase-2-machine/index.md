@@ -38,7 +38,7 @@ $ qemu-aarch64 -L /usr/aarch64-redhat-linux/sys-root/fc44 build-aarch64/add
 add: 42
 ```
 
-The source is shared; the output matches on both machines. The second run emulates an AArch64 processor in software; QEMU translates each ARM instruction as it goes, and the output is identical. Your prediction about the spelling was the interesting one. Open both listings and compare.
+The source is shared; the output matches on both machines. The second run emulates an AArch64 processor in software; QEMU translates the ARM code to host code and runs the translation, and the output is identical. Your prediction about the spelling was the interesting one. Open both listings and compare.
 
 ## The x86-64 dialect
 
@@ -100,17 +100,17 @@ Both columns are the program. Each is what the compiler emitted for its machine,
 
 ## Frames, built and torn down
 
-Both listings build a stack frame on entry and tear it down on exit. x86-64 pushes the old base pointer and anchors `%rbp`; AArch64 subtracts 16 from the stack pointer. The stores and loads between those two lines are the function's short-term memory: `a` and `b` live at frame offsets for the few instructions that need them.
+Both listings build a stack frame on entry and tear it down on exit at `-O0`: x86-64 pushes the old base pointer and anchors `%rbp`; AArch64 subtracts 16 from the stack pointer. The stores and loads between those two lines are the function's short-term memory: `a` and `b` live at frame offsets for the few instructions that need them.
 
-This is the frame Phase 1 saw torn down. `winner` returned an address into exactly this structure after the teardown lines ran. Find the teardown in each listing above: `pop %rbp` on one side, `add sp, sp, #0x10` on the other. Find them, and the dangling pointer stops being abstract. The object lived between the setup line and the teardown line, and not one instruction longer.
+This is the kind of frame Phase 1 saw torn down. `winner` returned an address into exactly this structure after the teardown lines ran. Find the teardown in each listing above: `pop %rbp` on one side, `add sp, sp, #0x10` on the other. Find them, and the dangling pointer stops being abstract. The object lived between the setup line and the teardown line, and not one instruction longer. (`-O2` may skip the frame entirely, as the collapsed `winner` shows — one more reason to read the listing.)
 
 ## Bytes are instructions
 
-The left column of each listing is the program itself: `01 d0` is the addition on x86-64, two bytes the processor fetches, decodes, and executes. `0b000020` is the addition on AArch64: four bytes, and every AArch64 instruction is exactly four wide. Assemblers turn text into these bytes; disassemblers turn them back. Neither direction loses information here, which is why `objdump` can show both side by side with nothing hidden.
+The left column of each listing is the program itself: `01 d0` is the addition on x86-64, two bytes the processor fetches, decodes, and executes. `0b000020` is the addition on AArch64: four bytes, and every AArch64 instruction is exactly four wide. Assemblers turn text into these bytes; disassemblers turn them back. For these two listings, nothing is lost in either direction, which is why `objdump` can show both side by side with nothing hidden.
 
 Find the `add` bytes in each listing once more. A C program is text you write, and it is also bytes the machine reads. Both descriptions are complete. When they disagree about what happens next, the bytes win, because the bytes are what runs.
 
-**A C program means whatever its instructions do.** Read the listing before you predict the behavior, and the behavior stops surprising you.
+**A C program means whatever its instructions do.** Read the listing before you predict the behavior, and the behavior stops surprising you. Where the standard leaves behavior undefined, the listing still shows what this build did. Read that, not your intention.
 
 ## Proof in three parts
 
@@ -142,11 +142,11 @@ The first line is the gate's verdict on x86-64. The second is QEMU's stdout from
 
 1. Run `make -C labs/asm check` and confirm every line verifies, including the emulated run.
 2. Change `+` to `-`, predict the new output, and name the instruction line that must change in each listing before you rebuild. Then rebuild and check both predictions.
-3. Run the AArch64 binary without QEMU: `./build-aarch64/add`. Running it prints `cannot execute binary file: Exec format error` and exits 126: the kernel loads only its own machine's format, so the message marks instruction sets as real boundaries.
+3. Run the AArch64 binary without QEMU: `./build-aarch64/add`. Running it prints `cannot execute binary file: Exec format error` and exits 126 on this machine, which registers no binfmt handler for the architecture: the kernel loads only its own machine's format, so the message marks instruction sets as real boundaries.
 4. Open both `add.s` files and find where each function spills its arguments. Count the stores. Both spill twice at `-O0`; consider what `-O2` might skip, then compile with `-O2` and read the answer.
 5. Write `mul` beside `add`: same shape, `return a * b`, printed from `main`. Predict its two listing lines (the sum lines with the operator swapped), then verify against both outputs.
 
-Read in this order: the System V AMD64 ABI ([the x86-64 psABI project](https://gitlab.com/x86-psABIs/x86-64-ABI)) for the register contract; AAPCS64 ([the procedure-call standard itself](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst)) for ARM's; and the Intel SDM ([the x86 manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)) for the byte definitions.
+Read in this order: the System V AMD64 ABI ([the x86-64 psABI project](https://gitlab.com/x86-psABIs/x86-64-ABI)) for the register contract; AAPCS64 ([the procedure-call standard itself](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst)) for ARM's; and the Intel SDM ([the Intel manuals index](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)) for the byte definitions.
 
 ## What's next
 

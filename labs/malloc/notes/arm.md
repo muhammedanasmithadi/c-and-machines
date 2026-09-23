@@ -42,18 +42,15 @@ Expect what the native chapter teaches: `leak` prints `leak: phantom` and exits 
 ## What differs on AArch64
 
 1. **AAPCS64 calling convention.** Arguments in x0..x7, return in x0.
-   `malloc` here reaches the dynamic linker through the PLT.
-2. **The register map.** The x86-64 listings spill `local` below the base pointer (`-4(%rbp)` in Clang's epilogue, `-16(%rbp)` in GCC's). AArch64 spills below the stack pointer (`[sp, #28]` in Clang's, `[sp, 24]` in GCC's) and returns in `x0`. The fault is identical: a pointer into a dead frame.
+   `malloc` here goes through the PLT to libc.
+2. **The register map.** The x86-64 listings spill `local` into the new frame (`-4(%rbp)` in Clang's epilogue, `-16(%rbp)` in GCC's). AArch64 spills into its carved frame (`[sp, #28]` in Clang's, `[sp, 24]` in GCC's) and returns in `x0`. The fault is identical: a pointer into a dead frame.
 3. **Memory ordering is weaker than x86 TSO.** The same C code compiles to the same
    allocation calls, but the machine's memory model differs. Phase 5 returns to
    this when locks meet fences (DMB/DSB, LDAR/STLR).
-4. **Endianness default is little**, same as x86-64. All pointers on these two targets are 64-bit,
-   so `malloc` block sizes and header layout in the survey (Wilson et al.) still
-   match the two ISAs.
+4. **Endianness default is little**, same as x86-64. All pointers on these two targets are 64-bit. Read the survey's block diagrams with that width in mind.
 
 ## Gate for the ARM leg of the lab
 
-`build/fixed` must run under `qemu-aarch64` and print `fixed: 42`.
+`build-aarch64/fixed` must run under `qemu-aarch64` and print `fixed: 42`.
 The three failure binaries must fail under valgrind/ASan on x86-64 from the
-same sources. Matching verdicts on both ISAs show the law sits in the
-language, not in one instruction set.
+same sources. Same sources, same lifetime law, second ISA — the behavior matches on both, as the standard's rule predicts.
