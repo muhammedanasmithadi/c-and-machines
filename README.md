@@ -11,7 +11,7 @@ You read it as a static site and prove every claim on your own machine.
 ## Prove
 
 - Lab gate for Phase 1: `make check` (ASan binaries fail as documented; fixed prints `fixed: 42`).
-- Prose gate: `make preflight` (banned-word check from WRITING.md).
+- Prose gate: `make preflight` (one-law, voice, and first-40-lines gates from WRITING.md).
 - Full site build: `make build`.
 
 ## Write
