@@ -9,6 +9,18 @@ module_id = "2A"
 law = "The listing is what runs, not the C source."
 pretrain = ["instruction", "register", "listing", "argument", "return"]
 order = 1
+forbidden_first_40_lines = ["popq/retq", "BTI internals", "AddressSanitizer", "Valgrind", "a second law"]
+opener = "add.c: predict the print and the spelling on two machines"
+worked_example = "x86 vs AArch64 job table"
+counterexample = "running the AArch64 binary without QEMU (exit 126)"
+proof_spec = "System V AMD64 ABI + AAPCS64 (argument and return registers)"
+proof_code = "labs/asm (add.c, both listings)"
+proof_log = "VERIFIED ./build/add + QEMU add: 42"
+practice_retrieve = "register table plus law, from memory"
+practice_complete = "change + to -, name the changed lines"
+practice_transfer = "write mul, predict both listings"
+read_after = "AMD64 ABI; AAPCS64; Intel SDM (look-fors on page)"
+appendix = "none"
 +++
 
 <div class="epigraph">
@@ -16,7 +28,7 @@ order = 1
 <p class="attribution">— the rule, stated in advance, proved below</p>
 </div>
 
-Here is a short C program. Predict what it prints, then predict whether the two machines below spell the sum the same way.
+Here is a short C program. Predict what it prints, then predict whether the two machines below spell the sum the same way. (Each instruction set speaks its own dialect: x86-64 one, AArch64 another.)
 
 <div class="code-label">add.c</div>
 
@@ -84,7 +96,7 @@ The same function, compiled for ARM's 64-bit instruction set:
   40074c:	d65f03c0 	ret
 ```
 
-Cover the listing and predict where the sum lands before reading on. Same shape, different syllables. The first line, `bti c`, marks a valid indirect-branch target; it guards, it does not compute, and you can ignore it until the security chapter. The frame setup starts on the next line. The caller placed the arguments in `w0` and `w1`, the 32-bit halves of the `x0` and `x1` registers, per AAPCS64. The function spills both to its frame, reloads them, and `add w0, w1, w0`, bytes `0b000020`, writes the sum over `w0`. The answer leaves in the same register the first argument arrived in.
+Cover the listing and predict where the sum lands before reading on. Same shape, different syllables. The first line, `bti c`, marks a valid indirect-branch target; it guards, it does not compute, and no later module in v0.1 needs it. The frame setup starts on the next line. The caller placed the arguments in `w0` and `w1`, the 32-bit halves of the `x0` and `x1` registers, per AAPCS64. The function spills both to its frame, reloads them, and `add w0, w1, w0`, bytes `0b000020`, writes the sum over `w0`. The answer leaves in the same register the first argument arrived in.
 
 ## Same sum, two dialects
 
@@ -135,8 +147,8 @@ The first line is the gate's verdict on x86-64. The second is QEMU's stdout from
 1. Run `make -C labs/asm check` and confirm every line verifies, including the emulated run.
 2. Change `+` to `-`, predict the new output, and name the instruction line that must change in each listing before you rebuild. Then rebuild and check both predictions.
 3. Run the AArch64 binary without QEMU: `./build-aarch64/add`. Running it prints `cannot execute binary file: Exec format error` and exits 126 on this machine, which registers no binfmt handler for the architecture: the kernel loads only its own machine's format, so the message marks instruction sets as real boundaries.
-4. Write `mul` beside `add`: same shape, `return a * b`, printed from `main`. Predict its two listing lines (the sum lines with the operator swapped), then verify against both outputs.
-5. Without looking, fill this from memory: first argument on x86-64? First argument on ARM? Return register on x86-64? Return register on ARM? Then reopen the table and check.
+4. Write `mul` beside `add`: same shape, `return a * b`, printed from `main`. Predict which listing lines must change on each ISA, then rebuild and verify both outputs against your predictions.
+5. Without looking, fill this from memory: first argument on x86-64? First argument on ARM? Return register on x86-64? Return register on ARM? Then write the law in one sentence. Reopen the table and check both.
 
 Read after you finish, not before: the System V AMD64 ABI ([the x86-64 psABI project](https://gitlab.com/x86-psABIs/x86-64-ABI)) for the register contract (look for which registers carry the first two arguments and the return value); AAPCS64 ([the procedure-call standard itself](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst)) for ARM's (look for `w0` and `w1`); and the Intel SDM ([the Intel manuals index](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)) for the byte definitions.
 

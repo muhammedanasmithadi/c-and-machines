@@ -9,6 +9,18 @@ module_id = "1B"
 law = "When the block exits, the automatic object's lifetime ends and the pointer's value becomes indeterminate."
 pretrain = ["object", "address", "pointer", "lifetime", "automatic storage"]
 order = 2
+forbidden_first_40_lines = ["popq/retq", "ASan", "Valgrind", "QEMU", "a second law"]
+opener = "winner.c: one-step twist on 1A (the owner returns)"
+worked_example = "four storage durations table"
+counterexample = "the opener itself (UB lives here, not in 1A)"
+proof_spec = "C11 §6.2.4p2 (two sentences, after the crash)"
+proof_code = "labs/malloc/tests/dangling.c + winner.c opener"
+proof_log = "dangling ASan stanza (null-pointer load + SEGV)"
+practice_retrieve = "write the law; why printing 7 is still failure"
+practice_complete = "heap-storage variant + free exactly once"
+practice_transfer = "static fix called twice; compare addresses"
+read_after = "C11 §6.2.4 (the word indeterminate)"
+appendix = "four compiler/ISA listings"
 +++
 
 <div class="epigraph">
@@ -50,11 +62,11 @@ If you predicted 7, that is the usual first guess: nobody overwrote the slot yet
 
 You can see why someone would expect `7`. Nothing overwrote that stack slot between the return and the read, so the value should still be sitting there. The standard says otherwise. Here is why.
 
-`winner` returns `&local`. The address bits survive the return. The object does not, and from that moment the standard calls the pointer's value indeterminate. The object it names is gone.
+`winner` returns `&local`. What comes back depends on the compiler: Clang hands back the slot's address, while GCC 16 on this build folds it to `NULL` (the listing below shows the fold). Either way, the object does not survive the return, and from that moment the standard calls the pointer's value indeterminate. The object it names is gone.
 
 `local` has **automatic storage duration**. Section 6.2.4 of the C standard sets its lifetime: the object exists from entry into the block until exit from the block. When `winner` returns, the block exits and the lifetime ends. The pointer still holds the old address, but no object lives there anymore.
 
-That pointer is **dangling**. It points where its object used to live. The address is unchanged, but the standard guarantees nothing behind it now.
+That pointer is **dangling**. It points where its object used to live. On the toolchains that hand back the slot address, the address is unchanged, but the standard guarantees nothing behind it now.
 
 This is a property of the language, and two sentences from **6.2.4p2** state it:
 
@@ -74,7 +86,7 @@ The C standard divides storage into four durations. Each row says when the objec
 | Thread | thread's lifetime | thread exit |
 | Allocated | until `free` | your `free` |
 
-<aside class="sidenote"><a href="http://booksite.elsevier.com/9780128017333/">Patterson and Hennessy</a> (Chapter 2, "Instructions: Language of the Computer", [the book](http://booksite.elsevier.com/9780128017333/)) place each of these rows in a distinct region of virtual memory in a typical Linux process. The four rows name the stack, the data segment, the TLS block, and the heap: four regions the OS places at distinct addresses.</aside>
+<aside class="sidenote"><a href="http://booksite.elsevier.com/9780128017333/">Patterson and Hennessy</a> (Chapter 2, "Instructions: Language of the Computer", [the book](http://booksite.elsevier.com/9780128017333/)) describe a process address space with the stack, the data segment, and the heap at distinct addresses. Thread-local storage gets its own block per thread. The four rows above name those four homes.</aside>
 
 The mistake in `winner` fits one row of that table: it returned a pointer to an automatic object, and the caller used it after the block exited. Point to that row before reading on.
 
@@ -120,7 +132,7 @@ $ ./static_twice
 a=0x403020 b=0x403020 same=1
 ```
 
-Same address both times, because one object serves every call. The cost: the function is no longer reentrant. Two callers that each expect their own result now share one object, so the second call overwrites the first. If your program needs distinct results per call, this design breaks. Section 6.2.4 defines what static duration provides. You will stop needing the static trick once you can own heap objects. Do not start there.
+Same address both times, because one object serves every call. (Your address will differ; the `same=1` is the point.) The cost: the function is no longer reentrant. Two callers that each expect their own result now share one object, so the second call overwrites the first. If your program needs distinct results per call, this design breaks. Section 6.2.4 defines what static duration provides. You will stop needing the static trick once you can own heap objects. Do not start there.
 
 The second fix hands the caller responsibility for the object's lifetime. Allocate the object on the heap, and let the caller free it.
 
@@ -156,6 +168,7 @@ The object lives until `free`, and ownership moves to the caller. The lab builds
 </div>
 
 ```txt
+$ cd labs/malloc
 $ ./build-asan/dangling
 tests/dangling.c:13:3: runtime error: load of null pointer of type 'int'
 ==NNNN==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x000000400636 ...)
@@ -166,9 +179,9 @@ SUMMARY: AddressSanitizer: SEGV tests/dangling.c:13 in main
 ==NNNN==ABORTING
 ```
 
-The `==NNNN==` masks the process id, which changes each run. Everything else is as the tools wrote it. Reference: GCC 16.2.1 with `-fsanitize=address,undefined`, Fedora 44, x86-64, 2026-09-16. The ledger bugs' transcripts and the other ISA live in [1C](@/v0.1/phase-1-pointers/1c-allocator/index.md); the other compilers' listings are in the appendix below.
+The `==NNNN==` masks the process id, which changes each run. Every quoted line is verbatim; the stacks are trimmed to the frames that name your code, so run the binary by hand for the full trace. Reference: GCC 16.2.1 with `-fsanitize=address,undefined`, Fedora 44, x86-64, 2026-09-16. The ledger bugs' transcripts live in [1C](@/v0.1/phase-1-pointers/1c-allocator/index.md); the other ISA lives in `labs/malloc/notes/arm.md` (1C's stretch item); the other compilers' listings are in the appendix below.
 
-A pointer is a promise that an object is still alive. The machine does not store the promise. If you break it, the C standard calls the behavior undefined: crash, garbage, or a lucky correct print.
+A pointer is a promise that an object is still alive. The promise is the law above in plainer words. The machine does not store the promise. If you break it, the C standard calls the behavior undefined: crash, garbage, or a lucky correct print.
 
 ## Practice
 

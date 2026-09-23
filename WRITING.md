@@ -44,7 +44,7 @@ Every teaching module uses this order. Empty steps mean the module is not done.
 10. **Retrieval** — close the page; write the law; write why the broken variant fails.
 11. **The standard, after** — section number and the sentence to look for. Never as first instruction.
 
-The public six-step shape (artifact, run, mechanism, law, proof, practice) is this order, named for the reader. Do not skip steps 1, 7, 10, or 11 in the draft just because the public list is shorter.
+The public six-step shape (artifact, run, mechanism, law, proof, practice) is this order, named for the reader. The mapping is fixed: steps 1–2 are the artifact, steps 3–4 are the run, step 5 is the mechanism, step 6 is the law, steps 7–8 plus the proof triple plus step 11 are the proof, steps 9–10 are the practice. Do not skip steps 1, 7, 10, or 11 in the draft just because the public list is shorter.
 
 ## The law sentence
 
@@ -60,7 +60,7 @@ Bad: "The machine keeps the books." (metaphor, not a testable rule)
 Bad: two laws joined by a semicolon.
 Bad: a law that requires a term taught two chapters later.
 
-State the law once at the top as a promise, prove it, state it once at the end as something to retrieve. Not three slogans and no mechanism.
+State the law once at the top as a promise, land it once right after the mechanism, prove it, state it once at the end as something to retrieve. The same sentence all three times: the epigraph, the landing, and the close must match word for word, so "write the law" in practice always means one retrievable sentence. Not three slogans and no mechanism: the landing earns its place because the mechanism sits directly above it.
 
 ## Voice
 
@@ -110,7 +110,7 @@ Everything else is an **appendix**: other compilers, other ISAs, full traces, "r
 
 ## Practice (every module)
 
-Three items, no more required, no fewer:
+Three kinds, no fewer, in this order. "Write the law" always means the module's epigraph sentence, word for word.
 
 | Kind | What it is | Example |
 |---|---|---|
@@ -118,7 +118,7 @@ Three items, no more required, no fewer:
 | Complete | Hole in a worked example | "Change `+` to `-`. Name the instruction that must change in each listing." |
 | Transfer | One new case | "Call static `winner` twice. Do the addresses match? Why?" |
 
-Delete treasure hunts. Delete "match this list to a later chapter." Stretch ISA / sanitizer work is allowed as an optional fourth item, labeled stretch.
+Delete treasure hunts. Delete "match this list to a later chapter." Stretch ISA / sanitizer work is allowed as an optional labeled extra beyond the three kinds.
 
 ## Sources
 
@@ -147,7 +147,7 @@ It contains: what they will be able to **do**, the phase table, start here (Phas
 
 It does not contain: promises/debt metaphors, "almost nothing rests on the author's word," two-gate canon, `jj` bookmarks, tool ownership, scavenger hunts.
 
-Build lore and philosophy may live under **How this book is made**, below the fold.
+Build lore and philosophy may live under **How this book is made**, below the fold. So may the Shelf canon and the build notes: the "does not contain" list above governs the first screen, not the whole page.
 
 ## Module frontmatter (required)
 

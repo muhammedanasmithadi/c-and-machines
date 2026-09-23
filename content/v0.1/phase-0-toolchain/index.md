@@ -9,6 +9,18 @@ module_id = "0"
 law = "Every byte in the built program was put there by the toolchain."
 pretrain = ["source", "preprocess", "compile", "assemble", "link"]
 order = 0
+forbidden_first_40_lines = ["ELF magic", "endianness", "ABI widths", "a second law"]
+opener = "hello.c: predict the print, then run it"
+worked_example = "four stages, five artifacts byte-count table"
+counterexample = "deleting the #include line (implicit-declaration diagnostic)"
+proof_spec = "C11 §5.1.1.2 (eight phases; flags mark four observable stops)"
+proof_code = "labs/toolchain (hello.c, sizes.c, stage Makefile)"
+proof_log = "VERIFIED ./build/hello + VERIFIED ./build/sizes"
+practice_retrieve = "write the law, then the four stages with their flags"
+practice_complete = "find main: in hello.s, name the call"
+practice_transfer = "delete #include, read the diagnostic, put it back"
+read_after = "K&R 2e Ch 2 (what the types promise)"
+appendix = "A: bytes on disk (ELF); B: measure your machine (sizes/ABI)"
 +++
 
 <div class="epigraph">
@@ -98,7 +110,7 @@ Every command leaves an exit status in `$?`. `0` means success. `make check` is 
 
 A gate that cannot tell pass from fail is decoration.
 
-**A program is built in stages, and each stage leaves a file you can read.** Preprocess, compile, assemble, link: four tools, five artifacts, every byte of the build accounted for.
+**Every byte in the built program was put there by the toolchain.** Preprocess, compile, assemble, link: four tools, five artifacts, every byte of the build accounted for.
 
 ## Proof in three parts
 
@@ -132,7 +144,7 @@ Two binaries verified, four stage assertions passed with no output because each 
 2. Open `build/hello.s`, find the `main:` label, and read the body under it down to `ret`. Name the one that performs the call.
 3. Delete the `#include` line, rebuild, and read the diagnostic. The compiler stops with `error: implicit declaration of function ‘printf’` and even suggests the missing line. Put it back.
 4. Count the bytes at each stage with `wc -c` and compare against the table above. Same toolchain, same flags, same directory: same numbers. Debug info records the build path, so a different directory means different bytes.
-5. Close the page. Write the four stages in order and the flag that stops at each one. Then reopen and check.
+5. Close the page. Write the law in one sentence, then the four stages in order and the flag that stops at each one. Then reopen and check.
 
 Read after you finish the lab, not before: K&R 2e ([the C book](https://9p.io/cm/cs/cbook/)), **Ch 2** for what the types promise. You do not need the C standard yet. Phase 1 will quote two sentences from §6.2.4 after the dangling pointer has crashed. For the bytes on disk, see Appendix A below; for measuring your own machine, see Appendix B.
 

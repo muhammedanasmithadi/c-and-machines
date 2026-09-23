@@ -10,14 +10,16 @@ cd "$(dirname "$0")/.."
 
 PATTERN='\b(die|dies|died|moods?|lore|phantom|magic|3 ?a\.?m\.?)\b'
 
-strip_code() {
-  awk 'BEGIN{f=0} /^[[:space:]]*```/{f=!f; next} !f{print}' "$1" \
-    | sed 's/`[^`]*`//g'
+# Frontmatter ([extra] metadata between the +++ markers) is not prose: the
+# law and template keys live there, and reader-facing gates must not read it.
+# (The module-law gate below is the exception: it reads frontmatter only.)
+strip_frontmatter() {
+  awk 'BEGIN{n=0} /^\+\+\+/{n++; next} n!=1{print}' "$1"
 }
 
 fail=0
 for f in $(find content labs/malloc/notes -name '*.md'); do
-  hits=$(strip_code "$f" | grep -nEi "$PATTERN" || true)
+  hits=$(strip_frontmatter "$f" | awk 'BEGIN{f=0} /^[[:space:]]*```/{f=!f; next} !f{print}' | sed 's/`[^`]*`//g' | grep -nEi "$PATTERN" || true)
   if [ -n "$hits" ]; then
     echo "preflight: banned word in $f"
     echo "$hits" | sed 's/^/  /'
@@ -36,6 +38,8 @@ files = subprocess.run(
 hits = []
 for f in files:
     t = open(f).read()
+    if t.startswith('+++'):
+        t = t.split('+++', 2)[-1]
     t = re.sub(r'```.*?```', '', t, flags=re.S)
     t = re.sub(r'{% raw %}.*?{% endraw %}', '', t, flags=re.S)
     t = re.sub(r'`[^`]*`', '', t)
@@ -64,6 +68,8 @@ pats = [r'not [^.?!]{3,80}\. (It is|That is|They are|This is)',
         r'(is|are) not [^.?!]{3,80};']
 for f in files:
     t = open(f).read()
+    if t.startswith('+++'):
+        t = t.split('+++', 2)[-1]
     t = re.sub(r'```.*?```', '', t, flags=re.S)
     t = re.sub(r'{% raw %}.*?{% endraw %}', '', t, flags=re.S)
     t = re.sub(r'`[^`]*`', '', t)
@@ -81,6 +87,8 @@ files = subprocess.run(
     capture_output=True, text=True).stdout.split()
 for f in files:
     t = open(f).read()
+    if t.startswith('+++'):
+        t = t.split('+++', 2)[-1]
     t = re.sub(r'```.*?```', '', t, flags=re.S)
     t = re.sub(r'{% raw %}.*?{% endraw %}', '', t, flags=re.S)
     t = re.sub(r'`[^`]*`', '', t)

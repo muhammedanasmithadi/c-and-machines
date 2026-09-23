@@ -9,6 +9,18 @@ module_id = "1C"
 law = "The ledger has one owner per block, and free is how you tell it."
 pretrain = ["malloc", "free", "leak", "double free", "ledger"]
 order = 3
+forbidden_first_40_lines = ["a second law", "read-the-standard-first"]
+opener = "the three ledger bugs (1B had one)"
+worked_example = "allocator stepper (48-byte invariant)"
+counterexample = "leak.c and doublefree.c (ledger violations)"
+proof_spec = "C11 §7.22.3 (memory-management functions)"
+proof_code = "labs/malloc/tests (leak, doublefree, dangling, fixed)"
+proof_log = "leak + doublefree ASan stanzas + VERIFIED lines"
+practice_retrieve = "write the ledger law; why a second free breaks"
+practice_complete = "fix the three broken files"
+practice_transfer = "cross-build AArch64 + QEMU (stretch)"
+read_after = "K&R Ch 5-6 App A; CS:APP §9.9; Wilson; Drepper parts 1-2"
+appendix = "Valgrind outside view"
 +++
 
 <div class="epigraph">
@@ -36,7 +48,7 @@ The syntax in each case is correct. The mistake in each is a misjudged lifetime.
 
 ## The allocator's ledger
 
-`malloc` manages the heap with a ledger. The ledger records every block: its address, its size, whether it is free. For the full mechanism, read [CS:APP §9.9](https://csapp.cs.cmu.edu/) and the [Wilson survey](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf). Both describe real allocators as this bookkeeping plus a search policy.
+`malloc` manages the heap with a ledger. The ledger records every block: its address, its size, whether it is free. Real allocators are this bookkeeping plus a search policy; the readings at the end name two designs to compare after you have walked the model below.
 
 Three facts about the ledger explain the three bugs:
 
@@ -83,7 +95,7 @@ Watch what the sum does across all seven steps: it stays 48 bytes the whole time
   </div>
   <div class="proof-block">
     <p class="proof-label">2 · The specification</p>
-    <p>The ledger rule is the contract. <code>doublefree.c</code> returns one block twice (lines 11–12), <code>leak.c</code> never returns its 40 bytes. The tools then show the proof. The dangling case was proven in <a href="@/v0.1/phase-1-pointers/1b-lifetime/index.md">1B</a>.</p>
+    <p>C11 §7.22.3 defines the memory-management functions: what <code>malloc</code> returns and what <code>free</code> ends, including the cases where the behavior is undefined. Against that contract, <code>doublefree.c</code> returns one block twice (lines 11–12) and <code>leak.c</code> never returns its 40 bytes. The ledger rule is that contract in one sentence. The dangling case was proven in <a href="@/v0.1/phase-1-pointers/1b-lifetime/index.md">1B</a> under §6.2.4.</p>
   </div>
   <div class="proof-block">
     <p class="proof-label">3 · The log</p>
@@ -92,6 +104,7 @@ Watch what the sum does across all seven steps: it stays 48 bytes the whole time
 </div>
 
 ```txt
+$ cd labs/malloc
 $ ./build-asan/leak
 ==NNNN==ERROR: LeakSanitizer: detected memory leaks
 Direct leak of 40 byte(s) in 1 object(s) allocated from:
@@ -119,11 +132,30 @@ VERIFIED ./build-asan/dangling
 VERIFIED ./build-asan/fixed
 ```
 
-Every line here is the machine's own. The `==NNNN==` masks the process id, which changes each run; the heap address `0x7ac...` changes with the allocator's state. Everything else is as the tools wrote it. The gate runs each binary and prints one VERIFIED line per program, shown last. Reference: GCC 16.2.1 with `-fsanitize=address,undefined`, Fedora 44, x86-64, 2026-09-16.
+The `==NNNN==` masks the process id, which changes each run; the heap address `0x7ac...` changes with the allocator's state. Every quoted line is verbatim; the stacks are trimmed to the frames that name your code, so run each binary by hand for the full trace. The gate runs each binary and prints one VERIFIED line per program, shown last. Reference: GCC 16.2.1 with `-fsanitize=address,undefined`, Fedora 44, x86-64, 2026-09-16.
 
-Each verdict needs its own reading. The leak exits 0, and an exit code of zero is not a pass. Only a tool that checks the ledger at exit sees the 40 bytes. `valgrind --leak-check=full` shows it plainly:
+Each verdict needs its own reading. The leak exits 0, and an exit code of zero is not a pass. Only a tool that checks the ledger at exit sees the 40 bytes: the LeakSanitizer stanza above is one such tool, and the appendix holds the outside view from Valgrind, which needs no special build flags.
+
+The double-free is caught at the second `free`, exactly where the source breaks the rule.
+
+## Practice
+
+`labs/malloc/` holds `winner.c` (the 1B opening program), `leak.c`, `doublefree.c`, `dangling.c`, and `fixed.c`. Your work:
+
+1. Close the page. Write the ledger law in one sentence. Write why a second `free` breaks the record even though the pointer is unchanged.
+2. Build with `gcc -O0 -g -Wall -Wextra -std=c11` and run each binary. Note which fail and which pass *on the surface*.
+3. Run `make -C labs/malloc check` and see each verdict against the ASan build.
+4. Fix the three broken files so all three pass under ASan and Valgrind. For `dangling.c` the fix is the static-duration design; for `doublefree.c`, a `free` per `malloc`, one owner; for `leak.c`, the missing `free`.
+5. (Stretch) Cross-build the same sources for AArch64 and run them under QEMU. Follow `labs/malloc/notes/arm.md`. The lesson must hold on the other ISA too.
+
+Read after you finish, not before: K&R 2e ([the C book](https://9p.io/cm/cs/cbook/)), **Ch 5–6** for pointers and structures and Appendix A for storage classes (what each duration promises); C11 **§7.22.3** ([the N1570 draft text](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf)) for the memory-management functions (look for what `malloc` promises and what `free` ends); CS:APP 3e **§9.9** for dynamic allocation ([the systems book](https://csapp.cs.cmu.edu/)); Wilson et al.'s [*Dynamic Storage Allocation: A Survey and Critical Review*](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf) for how the designs compare; and Drepper's [*What Every Programmer Should Know About Memory*](https://lwn.net/Articles/250967/), parts [1](https://lwn.net/Articles/250967/)–[2](https://lwn.net/Articles/252852/) for why the cost is in caches, not just correctness.
+
+## Appendix — the outside view (Valgrind)
+
+Valgrind watches the plain binary from the outside, with no special build flags, and reports the same 40 bytes the sanitizer found:
 
 ```txt
+$ cd labs/malloc
 $ valgrind --leak-check=full ./build/leak
 leak: phantom
 ==NNNN== HEAP SUMMARY:
@@ -136,21 +168,7 @@ leak: phantom
 ==NNNN== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
 ```
 
-(The same masking applies.) Valgrind 3.27.1 needs no special build flags. It runs the plain `./build/leak` and watches what the program does from the outside.
-
-The double-free is caught at the second `free`, exactly where the source breaks the rule. Run each binary by hand for the full stack, the register dump, and the exact heap addresses, unshortened.
-
-## Practice
-
-`labs/malloc/` holds `winner.c` (the 1B opening program), `leak.c`, `doublefree.c`, `dangling.c`, and `fixed.c`. Your work:
-
-1. Close the page. Write the ledger law in one sentence. Write why a second `free` breaks the record even though the pointer is unchanged.
-2. Build with `gcc -O0 -g -Wall -Wextra -std=c11` and run each binary. Note which fail and which pass *on the surface*.
-3. Run `make -C labs/malloc check` and see each verdict against the ASan build.
-4. Fix the three broken files so all three pass under ASan and Valgrind. For `dangling.c` the fix is the static-duration design; for `doublefree.c`, a `free` per `malloc`, one owner; for `leak.c`, the missing `free`.
-5. (Stretch) Cross-build the same sources for AArch64 and run them under QEMU. Follow `labs/malloc/notes/arm.md`. The lesson must hold on the other ISA too.
-
-Read after you finish, not before: K&R 2e ([the C book](https://9p.io/cm/cs/cbook/)), **Ch 5–6** for pointers and structures and Appendix A for storage classes (what each duration promises); CS:APP 3e **§9.9** for dynamic allocation ([the systems book](https://csapp.cs.cmu.edu/)); Wilson et al.'s [*Dynamic Storage Allocation: A Survey and Critical Review*](https://csapp.cs.cmu.edu/3e/docs/dsa.pdf) for how the designs compare; and Drepper's [*What Every Programmer Should Know About Memory*](https://lwn.net/Articles/250967/), parts [1](https://lwn.net/Articles/250967/)–[2](https://lwn.net/Articles/252852/) for why the cost is in caches, not just correctness.
+(The same masking applies.) Valgrind 3.27.1 runs `./build/leak` and watches what the program does. Two tools, one ledger: the block was never returned.
 
 ## What's next
 

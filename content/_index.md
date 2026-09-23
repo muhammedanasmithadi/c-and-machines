@@ -3,7 +3,7 @@ title = "C and Machines"
 description = "From first byte to complex systems. A self-paced course in C and the computer underneath it, taught from runnable programs and proven against the machine."
 +++
 
-This course teaches C by watching the machine. You will write small programs, run them, and read the files the compiler left behind. By the last phase you will have built a shell, an allocator, a concurrent server, and an emulator. Start at Phase 0. The first exercise takes ten minutes: compile twenty lines and name the four files `gcc` produced.
+This course teaches C by watching the machine. You will write small programs, run them, and read the files the compiler left behind. By the last phase you will have built a shell, an allocator, a concurrent server, and an emulator. Start at Phase 0. The first exercise takes ten minutes.
 
 ## How the course is built
 

@@ -9,6 +9,18 @@ module_id = "1A"
 law = "A pointer is valid only while the object it names is alive."
 pretrain = ["object", "address", "pointer", "&", "*"]
 order = 1
+forbidden_first_40_lines = ["undefined behavior", "ASan", "Valgrind", "QEMU", "a second law"]
+opener = "live.c: a pointer naming a live object"
+worked_example = "object/address/pointer pre-train table"
+counterexample = "none on this page; the breakage is module 1B"
+proof_spec = "C11 §6.2.4 (automatic lifetime lasts to block exit)"
+proof_code = "live.c (typed by the reader)"
+proof_log = "7"
+practice_retrieve = "write the law"
+practice_complete = "change 7 to 41, predict, run"
+practice_transfer = "second pointer q = p, predict *q"
+read_after = "K&R 2e Ch 5 (address-of and dereference)"
+appendix = "none"
 +++
 
 <div class="epigraph">
@@ -26,7 +38,7 @@ A pointer holds an address. The address is only usable while something real live
 | `&` | address-of: `&x` is where `x` lives |
 | `*` | dereference: `*p` is the object `p` names |
 
-Run this. Predict the print first.
+Run this. Predict the print first. Save it as `live.c`.
 
 <div class="code-label">live.c</div>
 

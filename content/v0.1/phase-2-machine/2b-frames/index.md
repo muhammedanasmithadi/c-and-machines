@@ -9,6 +9,18 @@ module_id = "2B"
 law = "The object lives between the setup line and the teardown line."
 pretrain = ["frame", "stack pointer", "base pointer", "setup", "teardown"]
 order = 2
+forbidden_first_40_lines = ["BTI", "a second law", "read-the-standard-first"]
+opener = "2A listings build and tear down frames (twist on dialects)"
+worked_example = "setup/teardown excerpts per ISA"
+counterexample = "-O2 collapsing the frame away"
+proof_spec = "C11 §6.2.4 via 1B (teardown lines are the block exit)"
+proof_code = "2A listings at -O0 + winner.c"
+proof_log = "2A gate (frames built, held a and b, tore down around 42)"
+practice_retrieve = "write the law; why post-teardown addresses fail"
+practice_complete = "cover each listing, point at its teardown line"
+practice_transfer = "count spills at -O0, predict -O2"
+read_after = "AMD64 ABI + AAPCS64 (register preservation)"
+appendix = "none"
 +++
 
 <div class="epigraph">
@@ -35,11 +47,11 @@ pop    %rbp              ; x86-64: release the frame
 add	sp, sp, #0x10     ; AArch64: give the 16 bytes back
 ```
 
-**The object lives between the setup line and the teardown line, and not one instruction longer.** The stores and loads above sit between those lines because the frame exists there. Past the teardown, the reservation is gone, so any address into it names released storage.
+**The object lives between the setup line and the teardown line.** Not one instruction longer: the stores and loads above sit between those lines because the frame exists there. Past the teardown, the reservation is gone, so any address into it names released storage.
 
 ## Where Phase 1's `local` ended
 
-This is the kind of frame Phase 1 saw torn down. `winner` returned an address into exactly this structure after the teardown lines ran. Find the teardown in each listing in 2A: `pop %rbp` on one side, `add sp, sp, #0x10` on the other. Find them, and the dangling pointer stops being abstract. The object lived between the setup line and the teardown line, and not one instruction longer. (`-O2` may skip the frame entirely, as the collapsed `winner` in [1B's appendix](@/v0.1/phase-1-pointers/1b-lifetime/index.md) shows. One more reason to read the listing.)
+This is the kind of frame Phase 1 saw torn down. `winner` returned an address into exactly this structure after the teardown lines ran. Find the teardown in each listing in 2A: `pop %rbp` on one side, `add sp, sp, #0x10` on the other. Find them, and the dangling pointer stops being abstract. Per the law above, `local` lived between those two lines. (`-O2` may skip the frame entirely, as the collapsed `winner` in [1B's appendix](@/v0.1/phase-1-pointers/1b-lifetime/index.md) shows. One more reason to read the listing.)
 
 Module 1B's law said the pointer's value becomes indeterminate when the block exits. These two teardown lines are where that exit happens on the machine. The standard names the rule; the listing shows the lines.
 
